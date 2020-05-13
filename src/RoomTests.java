@@ -7,37 +7,37 @@ public class RoomTests {
     @Test
     public void createRoomSuccess() {
         Room room = new Room(new Door(), new Door(), new Door(), new Door());
-        assertTrue(room.northDoorStatus());
-        assertTrue(room.southDoorStatus());
-        assertTrue(room.westDoorStatus());
-        assertTrue(room.eastDoorStatus());
+        assertTrue(room.northDoorUnlocked());
+        assertTrue(room.southDoorUnlocked());
+        assertTrue(room.westDoorUnlocked());
+        assertTrue(room.eastDoorUnlocked());
     }
 
     @Test
     public void lockNorthRoom() {
         Room room = new Room(new Door(), new Door(), new Door(), new Door());
         room.lockNorthDoor();
-        assertFalse(room.northDoorStatus());
+        assertFalse(room.northDoorUnlocked());
     }
 
     @Test
     public void lockSouthRoom() {
         Room room = new Room(new Door(), new Door(), new Door(), new Door());
         room.lockSouthDoor();
-        assertFalse(room.southDoorStatus());
+        assertFalse(room.southDoorUnlocked());
     }
 
     @Test
     public void lockWestRoom() {
         Room room = new Room(new Door(), new Door(), new Door(), new Door());
         room.lockWestDoor();
-        assertFalse(room.westDoorStatus());
+        assertFalse(room.westDoorUnlocked());
     }
 
     @Test
     public void lockEastRoom() {
         Room room = new Room(new Door(), new Door(), new Door(), new Door());
         room.lockEastDoor();
-        assertFalse(room.eastDoorStatus());
+        assertFalse(room.eastDoorUnlocked());
     }
 }

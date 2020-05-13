@@ -25,19 +25,19 @@ public class Room {
         this.eastDoor.lockDoor();
     }
 
-    public boolean northDoorStatus() {
+    public boolean northDoorUnlocked() {
         return this.northDoor.isUnlocked();
     }
 
-    public boolean southDoorStatus() {
+    public boolean southDoorUnlocked() {
         return this.southDoor.isUnlocked();
     }
 
-    public boolean westDoorStatus() {
+    public boolean westDoorUnlocked() {
         return this.westDoor.isUnlocked();
     }
 
-    public boolean eastDoorStatus() {
+    public boolean eastDoorUnlocked() {
         return this.eastDoor.isUnlocked();
     }
 }
