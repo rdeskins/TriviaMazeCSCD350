@@ -1,12 +1,12 @@
 
 public class TriviaGame {
-	private Maze maze;
+    private Maze maze;
 
-	public TriviaGame(Maze maze) {
-		this.maze = maze;
-	}
+    public TriviaGame(Maze maze) {
+        this.maze = maze;
+    }
 
-	public void playGame() {
-		//game logic
-	}
+    public void playGame() {
+        //game logic
+    }
 }
