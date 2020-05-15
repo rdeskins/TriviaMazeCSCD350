@@ -19,20 +19,12 @@ public class CreateDatabase
 	    System.out.println("Opened database successfully");
         stmt = c.createStatement();
         
-	    String sql = "CREATE TABLE QuestionData " +
+	    String sql = "CREATE TABLE Questions " +
 	                "(ID INT PRIMARY KEY NOT NULL," +
 	                " difficulty_ID INT NOT NULL, " + 
-	                " type_ID INT NOT NULL)";
-        stmt.executeUpdate(sql);
-
-        sql = "CREATE TABLE Questions " +
-                    "(ID INT PRIMARY KEY NOT NULL," +
-                    " question_text VARCHAR(255) NOT NULL)";
-        stmt.executeUpdate(sql);  
-        
-        sql = "CREATE TABLE Answers " +
-                    "(ID INT PRIMARY KEY NOT NULL," +
-                    " answer_text VARCHAR(255) NOT NULL)";
+                        " type_ID INT NOT NULL, " +
+                        " question_text VARCHAR(255) NOT NULL, " +
+                        " answer_text VARCHAR(255) NOT NULL)";
         stmt.executeUpdate(sql);
 
         sql = "CREATE TABLE Difficulties " +
