@@ -39,15 +39,15 @@ public class Maze {
                 west = VerticalDoors[i][j];
                 east = VerticalDoors[i][j + 1];
 
-                maze[i][j] = new Room(north, south, west, east);
+                this.maze[i][j] = new Room(north, south, west, east);
                 if (j == 0)
-                    maze[i][j].lockWestDoor();
+                    this.maze[i][j].lockWestDoor();
                 else if (j == this.mazeSize - 1)
-                    maze[i][j].lockEastDoor();
+                    this.maze[i][j].lockEastDoor();
                 if (i == 0)
-                    maze[i][j].lockNorthDoor();
+                    this.maze[i][j].lockNorthDoor();
                 else if (i == this.mazeSize - 1)
-                    maze[i][j].lockSouthDoor();
+                    this.maze[i][j].lockSouthDoor();
             }
         }
     }
@@ -55,28 +55,28 @@ public class Maze {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < (4 * mazeSize) + 1; i++) {
+        for (int i = 0; i < (4 * this.mazeSize) + 1; i++) {
             sb.append("*");
         }
 
-        for (int i = 0; i < mazeSize; i++) {
+        for (int i = 0; i < this.mazeSize; i++) {
             sb.append("\n*");
-            for (int j = 0; j < mazeSize; j++) {
-                if (playerRow == i && playerColumn == j)
+            for (int j = 0; j < this.mazeSize; j++) {
+                if (this.playerRow == i && this.playerColumn == j)
                     sb.append(" P ");
-                else if (goalRow == i && goalColumn == j)
+                else if (this.goalRow == i && this.goalColumn == j)
                     sb.append(" G ");
                 else
                     sb.append("   ");
 
-                if (maze[i][j].eastDoorUnlocked())
+                if (this.maze[i][j].eastDoorUnlocked())
                     sb.append("|");
                 else
                     sb.append("*");
             }
             sb.append("\n*");
-            for (int j = 0; j < mazeSize; j++) {
-                if (maze[i][j].southDoorUnlocked())
+            for (int j = 0; j < this.mazeSize; j++) {
+                if (this.maze[i][j].southDoorUnlocked())
                     sb.append("---*");
                 else
                     sb.append("****");
@@ -87,30 +87,68 @@ public class Maze {
     }
 
     public void moveNorth() {
-        if (maze[this.playerRow][this.playerColumn].northDoorUnlocked())
+        if (this.maze[this.playerRow][this.playerColumn].northDoorUnlocked())
             this.playerRow--;
         else
             System.out.println("North door is locked!");
     }
 
     public void moveSouth() {
-        if (maze[this.playerRow][this.playerColumn].southDoorUnlocked())
+        if (this.maze[this.playerRow][this.playerColumn].southDoorUnlocked())
             this.playerRow++;
         else
             System.out.println("South door is locked!");
     }
 
     public void moveWest() {
-        if (maze[this.playerRow][this.playerColumn].westDoorUnlocked())
+        if (this.maze[this.playerRow][this.playerColumn].westDoorUnlocked())
             this.playerColumn--;
         else
             System.out.println("West door is locked!");
     }
 
     public void moveEast() {
-        if (maze[this.playerRow][this.playerColumn].eastDoorUnlocked())
+        if (this.maze[this.playerRow][this.playerColumn].eastDoorUnlocked())
             this.playerColumn++;
         else
             System.out.println("East door is locked!");
+    }
+
+    public boolean pathToGoalExists() {
+        boolean pathExists = pathToGoal(playerRow, playerColumn);
+        setRoomsUnvisited();
+        return pathExists;
+    }
+
+    private boolean pathToGoal(int row, int column) {
+        if (row == this.goalRow && column == this.goalColumn)
+            return true;
+        if (this.maze[row][column].isVisited())
+            return false;
+        
+        this.maze[row][column].setVisited(true);
+
+        if (this.maze[row][column].northDoorUnlocked() && pathToGoal(row - 1, column))
+            return true;
+        if (this.maze[row][column].eastDoorUnlocked() && pathToGoal(row, column + 1))
+            return true;
+        if (this.maze[row][column].southDoorUnlocked() && pathToGoal(row + 1, column))
+            return true;
+        if (this.maze[row][column].westDoorUnlocked() && pathToGoal(row, column - 1))
+            return true;
+
+        return false;
+    }
+
+    private void setRoomsUnvisited() {
+        for (int i = 0; i < this.mazeSize; i++) {
+            for (int j = 0; j < this.mazeSize; j++) {
+                this.maze[i][j].setVisited(false);
+            }
+        }
+    }
+
+    public boolean goalReached() {
+        return (this.playerRow == this.goalRow && this.playerColumn == this.goalColumn);
     }
 }
