@@ -7,9 +7,20 @@ import java.util.Random;
 * Descrioption: Code related to creating the database and adding/retrieving data from the database.
 */
 public class Database {
-    public static boolean createDatabase() throws SQLException{
+    private String databaseName;
+
+    public Database(String fileName) throws SQLException {
+        this.databaseName = fileName;
         Connection c = connect();
         Statement stmt = c.createStatement();
+        this.createTables(c, stmt);
+        this.insertDefaultDifficulties(c, stmt);
+        this.insertDefaultQuestionTypes(c, stmt);
+	    stmt.close();
+	    c.close();
+    }
+
+    private void createTables(Connection c, Statement stmt) throws SQLException {
         String sql = "CREATE TABLE Questions " +
 	        "(ID INT PRIMARY KEY NOT NULL," +
 	        " difficulty_ID INT NOT NULL, " + 
@@ -27,8 +38,10 @@ public class Database {
             "(type_ID INT PRIMARY KEY NOT NULL," +
             "type VARCHAR(255) NOT NULL)";
         stmt.executeUpdate(sql);
+    }
 
-        sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
+    private boolean insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
+        String sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (0, 'Easy');";
         stmt.executeUpdate(sql);
         sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
@@ -37,8 +50,11 @@ public class Database {
         sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (2, 'Hard');";
         stmt.executeUpdate(sql);
+        return true;
+    }
 
-        sql = "INSERT INTO Types (Type_ID, type) " +
+    private boolean insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
+        String sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (0, 'True/False');";
         stmt.executeUpdate(sql);
         sql = "INSERT INTO Types (Type_ID, type) " +
@@ -47,13 +63,10 @@ public class Database {
         sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (2, 'Short Answer');";
         stmt.executeUpdate(sql);
-
-	    stmt.close();
-	    c.close();
         return true;
     }
 
-    public static boolean insertQuestion(int diffID, int typeID, String question, String answer) throws SQLException{
+    public boolean insertQuestion(int diffID, int typeID, String question, String answer) throws SQLException{
         Connection c = connect();
         Statement stmt = c.createStatement();
         int qID = getQuestionTotal();
@@ -67,13 +80,13 @@ public class Database {
         return true;
     }
 
-    public static String[] getRandomQuestion() throws SQLException{
+    public String[] getRandomQuestion() throws SQLException{
         Random random = new Random();
         int randomID = random.nextInt(getQuestionTotal());
         return getQuestion(randomID);
     }
 
-    private static String[] getQuestion(int qID) throws SQLException {
+    private String[] getQuestion(int qID) throws SQLException {
         Connection c = connect();
         Statement stmt = c.createStatement();
         String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
@@ -82,7 +95,7 @@ public class Database {
         return result;
     }
 
-    public static int getQuestionTotal() throws SQLException {
+    public int getQuestionTotal() throws SQLException {
         Connection c = connect();
         Statement stmt = c.createStatement();
         String sql = "SELECT COUNT(*) FROM Questions;";
@@ -93,7 +106,7 @@ public class Database {
         return total;
     }
 
-    public static ArrayList<String> getQuestionTypes() throws SQLException {
+    public ArrayList<String> getQuestionTypes() throws SQLException {
         ArrayList<String> results = new ArrayList<String>();
         Connection c = connect();
         Statement stmt = c.createStatement();
@@ -105,7 +118,7 @@ public class Database {
         return results;
     }
 
-    public static ArrayList<String> getDifficulties() throws SQLException {
+    public ArrayList<String> getDifficulties() throws SQLException {
         ArrayList<String> results = new ArrayList<String>();
         Connection c = connect();
         Statement stmt = c.createStatement();
@@ -117,7 +130,7 @@ public class Database {
         return results;
     }
 
-    private static Connection connect() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:trivia.db");
+    private Connection connect() throws SQLException {
+        return DriverManager.getConnection("jdbc:sqlite:" + this.databaseName);
     }
 }
