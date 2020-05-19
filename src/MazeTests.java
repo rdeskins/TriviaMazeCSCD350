@@ -115,7 +115,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveNorthFail() {
+    public void playerMoveNorthFail() {
         Maze maze = new Maze(4);
         maze.moveNorth();
         String expected = "*****************\n" +
@@ -131,7 +131,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveNorthSuccess() throws NoSuchFieldException, IllegalAccessException {
+    public void playerMoveNorthSuccess() throws NoSuchFieldException, IllegalAccessException {
         Maze maze = new Maze(4);
         Field playerRow = Maze.class.getDeclaredField("playerRow");
         playerRow.setAccessible(true);
@@ -150,7 +150,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveSouthFail() throws NoSuchFieldException, IllegalAccessException {
+    public void playerMoveSouthFail() throws NoSuchFieldException, IllegalAccessException {
         Maze maze = new Maze(4);
         Field playerRow = Maze.class.getDeclaredField("playerRow");
         playerRow.setAccessible(true);
@@ -169,7 +169,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveSouthSuccess() {
+    public void playerMoveSouthSuccess() {
         Maze maze = new Maze(4);
         maze.moveSouth();
         String expected = "*****************\n" +
@@ -185,7 +185,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveWestFail() {
+    public void playerMoveWestFail() {
         Maze maze = new Maze(4);
         maze.moveWest();
         String expected = "*****************\n" +
@@ -201,7 +201,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveWestSuccess() throws NoSuchFieldException, IllegalAccessException {
+    public void playerMoveWestSuccess() throws NoSuchFieldException, IllegalAccessException {
         Maze maze = new Maze(4);
         Field playerColumn = Maze.class.getDeclaredField("playerColumn");
         playerColumn.setAccessible(true);
@@ -220,7 +220,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveEastFail() throws NoSuchFieldException, IllegalAccessException {
+    public void playerMoveEastFail() throws NoSuchFieldException, IllegalAccessException {
         Maze maze = new Maze(4);
         Field playerColumn = Maze.class.getDeclaredField("playerColumn");
         playerColumn.setAccessible(true);
@@ -239,7 +239,7 @@ public class MazeTests {
     }
 
     @Test
-    public void PlayerMoveEastSuccess() {
+    public void playerMoveEastSuccess() {
         Maze maze = new Maze(4);
         maze.moveEast();
         String expected = "*****************\n" +
@@ -253,4 +253,97 @@ public class MazeTests {
                           "*****************";
         assertEquals(expected, maze.toString());
     }
+
+    @Test
+    public void pathToGoalSuccess() {
+        Maze maze = new Maze(4);
+        assertTrue(maze.pathToGoalExists());
+    }
+
+    @Test
+    public void pathToGoalLockedDoorsSuccess() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field fieldMaze = Maze.class.getDeclaredField("maze");
+        fieldMaze.setAccessible(true);
+        Room[][] testMaze = (Room[][]) fieldMaze.get(maze);
+        testMaze[0][0].lockEastDoor();
+        testMaze[3][3].lockNorthDoor();
+        testMaze[3][2].lockNorthDoor();
+        testMaze[3][1].lockNorthDoor();
+        testMaze[1][0].lockSouthDoor();
+        testMaze[1][1].lockSouthDoor();
+
+        String expected = "*****************\n" +
+                          "* P *   |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   |   *\n" +
+                          "*********---*---*\n" +
+                          "*   |   |   |   *\n" +
+                          "*---*************\n" +
+                          "*   |   |   | G *\n" +
+                          "*****************";
+        assertEquals(expected, maze.toString());
+
+        assertTrue(maze.pathToGoalExists());
+    }
+
+    @Test
+    public void pathToGoalLockedDoorsFail() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field fieldMaze = Maze.class.getDeclaredField("maze");
+        fieldMaze.setAccessible(true);
+        Room[][] testMaze = (Room[][]) fieldMaze.get(maze);
+        testMaze[0][0].lockEastDoor();
+        testMaze[0][0].lockSouthDoor();
+
+        assertFalse(maze.pathToGoalExists());
+    }
+
+    @Test
+    public void pathToGoalResetsVisitedStatus() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field fieldMaze = Maze.class.getDeclaredField("maze");
+        fieldMaze.setAccessible(true);
+        Room[][] testMaze = (Room[][]) fieldMaze.get(maze);
+        testMaze[0][0].lockSouthDoor();
+        testMaze[0][1].lockSouthDoor();
+        testMaze[0][2].lockSouthDoor();
+        testMaze[1][3].lockWestDoor();
+        testMaze[2][3].lockWestDoor();
+        testMaze[3][3].lockWestDoor();
+
+        String expected = "*****************\n" +
+                          "* P |   |   |   *\n" +
+                          "*************---*\n" +
+                          "*   |   |   *   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   *   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   * G *\n" +
+                          "*****************";
+        assertEquals(expected, maze.toString());
+
+        assertTrue(maze.pathToGoalExists());
+        assertTrue(maze.pathToGoalExists());
+    }
+
+    @Test
+    public void goalNotReached() {
+        Maze maze = new Maze(4);
+        assertFalse(maze.goalReached());
+    }
+
+    @Test
+    public void goalReached() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field playerRow = Maze.class.getDeclaredField("playerRow");
+        Field playerColumn = Maze.class.getDeclaredField("playerColumn");
+        playerRow.setAccessible(true);
+        playerColumn.setAccessible(true);
+        playerRow.set(maze, 3);
+        playerColumn.set(maze, 3);
+
+        assertTrue(maze.goalReached());
+    }
+
 }

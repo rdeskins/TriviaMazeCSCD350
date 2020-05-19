@@ -1,6 +1,7 @@
 
 public class Room {
     private Door northDoor, southDoor, westDoor, eastDoor;
+    private boolean visited = false;
 
     public Room(Door northDoor, Door southDoor, Door westDoor, Door eastDoor) {
         this.northDoor = northDoor;
@@ -39,5 +40,13 @@ public class Room {
 
     public boolean eastDoorUnlocked() {
         return this.eastDoor.isUnlocked();
+    }
+
+    public boolean isVisited() {
+        return this.visited;
+    }
+
+    public void setVisited(boolean status) {
+        this.visited = status;
     }
 }

@@ -9,4 +9,12 @@ public class TriviaGame {
     public void playGame() {
         //game logic
     }
+
+    private boolean winConditionMet() { // redundant
+        return this.maze.goalReached();
+    }
+
+    private boolean loseConditionMet() { // redundant
+        return !this.maze.pathToGoalExists();
+    }
 }
