@@ -80,18 +80,23 @@ public class Database {
         return true;
     }
 
-    public String[] getRandomQuestion() throws SQLException{
+    public String[] getRandomQuestion() throws SQLException, IllegalArgumentException {
         Random random = new Random();
         int randomID = random.nextInt(getQuestionTotal());
         return getQuestion(randomID);
     }
 
-    private String[] getQuestion(int qID) throws SQLException {
+    public String[] getQuestion(int qID) throws SQLException, IllegalArgumentException {
+        if (qID >= getQuestionTotal()) {
+            throw new IllegalArgumentException();
+        }
         Connection c = connect();
         Statement stmt = c.createStatement();
         String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
         ResultSet rs = stmt.executeQuery(sql);
         String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        c.close();
+        stmt.close();
         return result;
     }
 
@@ -115,6 +120,8 @@ public class Database {
         while (rs.next()) {
             results.add(rs.getString("type_ID") + ". " + rs.getString("type"));
         }
+        c.close();
+        stmt.close();
         return results;
     }
 
@@ -127,6 +134,8 @@ public class Database {
         while (rs.next()) {
             results.add(rs.getString("difficulty_ID") + ". " + rs.getString("difficulty"));
         }
+        c.close();
+        stmt.close();
         return results;
     }
 
