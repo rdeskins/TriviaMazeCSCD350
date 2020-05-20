@@ -7,174 +7,139 @@ import java.util.Random;
 * Descrioption: Code related to creating the database and adding/retrieving data from the database.
 */
 public class Database {
+    private String databaseName;
 
-    public static boolean createDatabase() {
-        Statement stmt = null;
+    public Database(String fileName) throws SQLException {
+        this.databaseName = fileName;
         Connection c = connect();
-        try {
-            stmt = c.createStatement();
-            //Create tables
-            String sql = "CREATE TABLE Questions " +
-	            "(ID INT PRIMARY KEY NOT NULL," +
-	            " difficulty_ID INT NOT NULL, " + 
-                " type_ID INT NOT NULL, " +
-                " question_text VARCHAR(255) NOT NULL, " +
-                " answer_text VARCHAR(255) NOT NULL)";
-            stmt.executeUpdate(sql);
-
-            sql = "CREATE TABLE Difficulties " +
-                "(difficulty_ID INT PRIMARY KEY NOT NULL," +
-                "difficulty VARCHAR(255) NOT NULL)";
-            stmt.executeUpdate(sql);
-
-            sql = "CREATE TABLE Types " +
-                "(type_ID INT PRIMARY KEY NOT NULL," +
-                "type VARCHAR(255) NOT NULL)";
-            stmt.executeUpdate(sql);
-
-            //Add basic difficulites. 0 = Easy, 1 = Medium, 2 = Hard
-            sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
-                    "VALUES (0, 'Easy');";
-            stmt.executeUpdate(sql);
-            sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
-                    "VALUES (1, 'Medium');";
-            stmt.executeUpdate(sql);
-            sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
-                    "VALUES (2, 'Hard');";
-            stmt.executeUpdate(sql);
-
-            //Add basic question types. 0 = T/F, 1 = Mult. Choice, 2 = Short Ans.
-            sql = "INSERT INTO Types (Type_ID, type) " +
-                "VALUES (0, 'True/False');";
-            stmt.executeUpdate(sql);
-            sql = "INSERT INTO Types (Type_ID, type) " +
-                "VALUES (1, 'Multiple Choice');";
-            stmt.executeUpdate(sql);
-            sql = "INSERT INTO Types (Type_ID, type) " +
-                "VALUES (2, 'Short Answer');";
-            stmt.executeUpdate(sql);
-
-            //Close connection
-	        stmt.close();
-	        c.close();
-            return true;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        Statement stmt = c.createStatement();
+        this.createTables(c, stmt);
+        this.insertDefaultDifficulties(c, stmt);
+        this.insertDefaultQuestionTypes(c, stmt);
+	    stmt.close();
+	    c.close();
     }
 
-    public static boolean insertQuestion(int diffID, int typeID, String question, String answer) {
-        Statement stmt = null;
-        Connection c = connect();
-        try {
-            stmt = c.createStatement();
-            int qID = getQuestionTotal();
-            String sql = "INSERT INTO Questions (ID, difficulty_ID, type_ID, question_text, answer_text) " +
-                "VALUES (" + qID + ", " + diffID + ", " + typeID + ", " +
-                    "'" + question +"', '" + answer + "');";
-            stmt.executeUpdate(sql);
+    private void createTables(Connection c, Statement stmt) throws SQLException {
+        String sql = "CREATE TABLE Questions " +
+	        "(ID INT PRIMARY KEY NOT NULL," +
+	        " difficulty_ID INT NOT NULL, " + 
+            " type_ID INT NOT NULL, " +
+            " question_text VARCHAR(255) NOT NULL, " +
+            " answer_text VARCHAR(255) NOT NULL)";
+        stmt.executeUpdate(sql);
 
-            c.close();
-            stmt.close();
-            return true;
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-	        return false;
-        }
+        sql = "CREATE TABLE Difficulties " +
+            "(difficulty_ID INT PRIMARY KEY NOT NULL," +
+            "difficulty VARCHAR(255) NOT NULL)";
+        stmt.executeUpdate(sql);
+
+        sql = "CREATE TABLE Types " +
+            "(type_ID INT PRIMARY KEY NOT NULL," +
+            "type VARCHAR(255) NOT NULL)";
+        stmt.executeUpdate(sql);
     }
 
-    public static String[] getRandomQuestion() {
+    private boolean insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
+        String sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
+                "VALUES (0, 'Easy');";
+        stmt.executeUpdate(sql);
+        sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
+                "VALUES (1, 'Medium');";
+        stmt.executeUpdate(sql);
+        sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
+                "VALUES (2, 'Hard');";
+        stmt.executeUpdate(sql);
+        return true;
+    }
+
+    private boolean insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
+        String sql = "INSERT INTO Types (Type_ID, type) " +
+            "VALUES (0, 'True/False');";
+        stmt.executeUpdate(sql);
+        sql = "INSERT INTO Types (Type_ID, type) " +
+            "VALUES (1, 'Multiple Choice');";
+        stmt.executeUpdate(sql);
+        sql = "INSERT INTO Types (Type_ID, type) " +
+            "VALUES (2, 'Short Answer');";
+        stmt.executeUpdate(sql);
+        return true;
+    }
+
+    public boolean insertQuestion(int diffID, int typeID, String question, String answer) throws SQLException{
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        int qID = getQuestionTotal();
+        String sql = "INSERT INTO Questions (ID, difficulty_ID, type_ID, question_text, answer_text) " +
+            "VALUES (" + qID + ", " + diffID + ", " + typeID + ", " +
+            "'" + question +"', '" + answer + "');";
+        stmt.executeUpdate(sql);
+
+        c.close();
+        stmt.close();
+        return true;
+    }
+
+    public String[] getRandomQuestion() throws SQLException, IllegalArgumentException {
         Random random = new Random();
         int randomID = random.nextInt(getQuestionTotal());
         return getQuestion(randomID);
     }
 
-    private static String[] getQuestion(int qID) {
-        Statement stmt = null;
+    public String[] getQuestion(int qID) throws SQLException, IllegalArgumentException {
+        if (qID >= getQuestionTotal()) {
+            throw new IllegalArgumentException();
+        }
         Connection c = connect();
-        try {
-            stmt = c.createStatement();
-            String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
-            ResultSet rs = stmt.executeQuery(sql);
-            String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
-            return result;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        Statement stmt = c.createStatement();
+        String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
+        ResultSet rs = stmt.executeQuery(sql);
+        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        c.close();
+        stmt.close();
+        return result;
     }
 
-    //Return -1 if there is an error
-    public static int getQuestionTotal() {
-        Statement stmt = null;
+    public int getQuestionTotal() throws SQLException {
         Connection c = connect();
-        try {
-            stmt = c.createStatement();
-            String sql = "SELECT COUNT(*) FROM Questions;";
-            ResultSet rs = stmt.executeQuery(sql);
-            int total = rs.getInt("COUNT(*)");
-            c.close();
-            stmt.close();
-            return total;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
+        Statement stmt = c.createStatement();
+        String sql = "SELECT COUNT(*) FROM Questions;";
+        ResultSet rs = stmt.executeQuery(sql);
+        int total = rs.getInt("COUNT(*)");
+        c.close();
+        stmt.close();
+        return total;
     }
 
-    //Returns empty array list if error occurs
-    public static ArrayList<String> getQuestionTypes() {
+    public ArrayList<String> getQuestionTypes() throws SQLException {
         ArrayList<String> results = new ArrayList<String>();
-        Statement stmt = null;
         Connection c = connect();
-        try {
-            stmt = c.createStatement();
-            String sql = "SELECT type_ID, type FROM Types;";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                results.add(rs.getString("type_ID") + ". " + rs.getString("type"));
-            }
-            return results;
+        Statement stmt = c.createStatement();
+        String sql = "SELECT type_ID, type FROM Types;";
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            results.add(rs.getString("type_ID") + ". " + rs.getString("type"));
         }
-        catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<String>();
-        }
+        c.close();
+        stmt.close();
+        return results;
     }
 
-    //Returns empty array list if error occurs
-    public static ArrayList<String> getDifficulties() {
+    public ArrayList<String> getDifficulties() throws SQLException {
         ArrayList<String> results = new ArrayList<String>();
-        Statement stmt = null;
         Connection c = connect();
-        try {
-            stmt = c.createStatement();
-            String sql = "SELECT difficulty_ID, difficulty FROM Difficulties;";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                results.add(rs.getString("difficulty_ID") + ". " + rs.getString("difficulty"));
-            }
-            return results;
+        Statement stmt = c.createStatement();
+        String sql = "SELECT difficulty_ID, difficulty FROM Difficulties;";
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            results.add(rs.getString("difficulty_ID") + ". " + rs.getString("difficulty"));
         }
-        catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<String>();
-        }
+        c.close();
+        stmt.close();
+        return results;
     }
 
-    private static Connection connect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection("jdbc:sqlite:trivia.db");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return conn;
+    private Connection connect() throws SQLException {
+        return DriverManager.getConnection("jdbc:sqlite:" + this.databaseName);
     }
 }
