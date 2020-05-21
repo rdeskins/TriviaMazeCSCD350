@@ -1,10 +1,9 @@
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 /*
 * Name: Robin Deskins
-* Descrioption: Code related to creating the database and adding/retrieving data from the database.
+* Description: Code related to creating the database and adding/retrieving data from the database.
 */
 public class Database {
     private String databaseName;
@@ -12,12 +11,17 @@ public class Database {
     public Database(String fileName) throws SQLException {
         this.databaseName = fileName;
         Connection c = connect();
+	    c.close();
+    }
+
+    public void initialize() throws SQLException {
+        Connection c = connect();
         Statement stmt = c.createStatement();
         this.createTables(c, stmt);
         this.insertDefaultDifficulties(c, stmt);
         this.insertDefaultQuestionTypes(c, stmt);
-	    stmt.close();
-	    c.close();
+        stmt.close();
+        c.close();
     }
 
     private void createTables(Connection c, Statement stmt) throws SQLException {
@@ -40,7 +44,7 @@ public class Database {
         stmt.executeUpdate(sql);
     }
 
-    private boolean insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
+    private void insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (0, 'Easy');";
         stmt.executeUpdate(sql);
@@ -50,10 +54,9 @@ public class Database {
         sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (2, 'Hard');";
         stmt.executeUpdate(sql);
-        return true;
     }
 
-    private boolean insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
+    private void insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (0, 'True/False');";
         stmt.executeUpdate(sql);
@@ -63,16 +66,15 @@ public class Database {
         sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (2, 'Short Answer');";
         stmt.executeUpdate(sql);
-        return true;
     }
 
-    public boolean insertQuestion(int diffID, int typeID, String question, String answer) throws SQLException{
+    public boolean insertQuestion(int diffID, int typeID, Question q) throws SQLException{
         Connection c = connect();
         Statement stmt = c.createStatement();
         int qID = getQuestionTotal();
         String sql = "INSERT INTO Questions (ID, difficulty_ID, type_ID, question_text, answer_text) " +
             "VALUES (" + qID + ", " + diffID + ", " + typeID + ", " +
-            "'" + question +"', '" + answer + "');";
+            "'" + q.getQuestion() +"', '" + q.getAnswer() + "');";
         stmt.executeUpdate(sql);
 
         c.close();
@@ -80,13 +82,48 @@ public class Database {
         return true;
     }
 
-    public String[] getRandomQuestion() throws SQLException, IllegalArgumentException {
-        Random random = new Random();
-        int randomID = random.nextInt(getQuestionTotal());
-        return getQuestion(randomID);
+    public void deleteAllQuestions() throws SQLException {
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        String sql = "DELETE FROM Questions;";
+        stmt.executeUpdate(sql);
+        stmt.close();
+        c.close();
     }
 
-    public String[] getQuestion(int qID) throws SQLException, IllegalArgumentException {
+    public Question getRandomQuestion() throws SQLException, IllegalArgumentException {
+        if (getQuestionTotal() == 0) {
+            throw new IllegalArgumentException();
+        }
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        String sql = "SELECT question_text, answer_text FROM Questions ORDER BY RANDOM() LIMIT 1;";
+        ResultSet rs = stmt.executeQuery(sql);
+        Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+        rs.close();
+        stmt.close();
+        c.close();
+        return result;
+    }
+
+    public Question getRandomQuestion(int difficultyID) throws SQLException, IllegalArgumentException {
+        if (getQuestionTotal() == 0) {
+            throw new IllegalArgumentException();
+        }
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        String sql = "SELECT question_text, answer_text FROM Questions " +
+            "WHERE difficulty_ID = " + difficultyID + " " +
+            "ORDER BY RANDOM() LIMIT 1;";
+        ResultSet rs = stmt.executeQuery(sql);
+        Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+        rs.close();
+        stmt.close();
+        c.close();
+        return result;
+    }
+
+    public Question getQuestion(int qID) throws SQLException, IllegalArgumentException {
         if (qID >= getQuestionTotal()) {
             throw new IllegalArgumentException();
         }
@@ -94,7 +131,7 @@ public class Database {
         Statement stmt = c.createStatement();
         String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
         ResultSet rs = stmt.executeQuery(sql);
-        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
         c.close();
         stmt.close();
         return result;
@@ -106,6 +143,7 @@ public class Database {
         String sql = "SELECT COUNT(*) FROM Questions;";
         ResultSet rs = stmt.executeQuery(sql);
         int total = rs.getInt("COUNT(*)");
+        rs.close();
         c.close();
         stmt.close();
         return total;
@@ -120,6 +158,7 @@ public class Database {
         while (rs.next()) {
             results.add(rs.getString("type_ID") + ". " + rs.getString("type"));
         }
+        rs.close();
         c.close();
         stmt.close();
         return results;
@@ -134,6 +173,7 @@ public class Database {
         while (rs.next()) {
             results.add(rs.getString("difficulty_ID") + ". " + rs.getString("difficulty"));
         }
+        rs.close();
         c.close();
         stmt.close();
         return results;
