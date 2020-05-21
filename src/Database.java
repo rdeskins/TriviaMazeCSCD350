@@ -25,7 +25,7 @@ public class Database {
         c.close();
     }
 
-    public void createTables(Connection c, Statement stmt) throws SQLException {
+    private void createTables(Connection c, Statement stmt) throws SQLException {
         String sql = "CREATE TABLE Questions " +
 	        "(ID INT PRIMARY KEY NOT NULL," +
 	        " difficulty_ID INT NOT NULL, " + 
@@ -45,7 +45,7 @@ public class Database {
         stmt.executeUpdate(sql);
     }
 
-    public void insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
+    private void insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (0, 'Easy');";
         stmt.executeUpdate(sql);
@@ -57,7 +57,7 @@ public class Database {
         stmt.executeUpdate(sql);
     }
 
-    public void insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
+    private void insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (0, 'True/False');";
         stmt.executeUpdate(sql);
@@ -93,9 +93,33 @@ public class Database {
     }
 
     public String[] getRandomQuestion() throws SQLException, IllegalArgumentException {
-        Random random = new Random();
-        int randomID = random.nextInt(getQuestionTotal());
-        return getQuestion(randomID);
+        if (getQuestionTotal() == 0) {
+            throw new IllegalArgumentException();
+        }
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        String sql = "SELECT question_text, answer_text FROM Questions ORDER BY RANDOM() LIMIT 1;";
+        ResultSet rs = stmt.executeQuery(sql);
+        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        stmt.close();
+        c.close();
+        return result;
+    }
+
+    public String[] getRandomQuestion(int difficultyID) throws SQLException, IllegalArgumentException {
+        if (getQuestionTotal() == 0) {
+            throw new IllegalArgumentException();
+        }
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        String sql = "SELECT question_text, answer_text FROM Questions " +
+            "WHERE difficulty_ID = " + difficultyID + " " +
+            "ORDER BY RANDOM() LIMIT 1;";
+        ResultSet rs = stmt.executeQuery(sql);
+        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        stmt.close();
+        c.close();
+        return result;
     }
 
     public String[] getQuestion(int qID) throws SQLException, IllegalArgumentException {

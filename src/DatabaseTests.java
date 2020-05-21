@@ -86,9 +86,32 @@ public class DatabaseTests {
                 db.insertQuestion(0, 0, "question" + i, "answer" + i);
             }
 
-            String[] result = db.getRandomQuestion();
-            assertTrue(result[0].contains("question"));
-            assertTrue(result[1].contains("answer"));
+            String[] actual = db.getRandomQuestion();
+            assertTrue(actual[0].contains("question"));
+            assertTrue(actual[1].contains("answer"));
+        }
+        catch (SQLException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void getRandomQuestionWithDifficultyTest() {
+        try {
+            db.insertQuestion(0, 2, "Easy", "Easy");
+            db.insertQuestion(1, 2, "Medium", "Medium");
+            db.insertQuestion(2, 2, "Hard", "Hard");
+            String expectedQ = "Easy";
+            String[] actual = db.getRandomQuestion(0);
+            assertEquals(expectedQ, actual[0]);
+            
+            expectedQ = "Medium";
+            actual = db.getRandomQuestion(1);
+            assertEquals(expectedQ, actual[0]);
+
+            expectedQ = "Hard";
+            actual = db.getRandomQuestion(2);
+            assertEquals(expectedQ, actual[0]);
         }
         catch (SQLException e) {
             fail();
