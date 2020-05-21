@@ -52,7 +52,8 @@ public class DatabaseTests {
     @Test
     public void insertQuestionTest() {
         try {
-            db.insertQuestion(0,0,"question","answer");
+            Question q = new Question("question", "answer");
+            db.insertQuestion(0, 0, q);
             String sql = "SELECT question_text, answer_text FROM Questions;";
             ResultSet rs = stmt.executeQuery(sql);
             assertEquals("question", rs.getString("question_text"));
@@ -66,13 +67,14 @@ public class DatabaseTests {
     @Test
     public void deleteAllQuestionsTest() {
         try {
-            db.insertQuestion(0, 0, "q", "a");
-            db.insertQuestion(0, 0, "q", "a");
+            Question q = new Question("q", "a");
+            db.insertQuestion(0, 0, q);
+            db.insertQuestion(0, 0, q);
             db.deleteAllQuestions();
             String sql = "SELECT COUNT(*) FROM Questions;";
             ResultSet rs = stmt.executeQuery(sql);
             int total = rs.getInt("COUNT(*)");
-            assertEquals(total, 0);
+            assertEquals(0, total);
         }
         catch (SQLException e) {
             fail();
@@ -83,12 +85,13 @@ public class DatabaseTests {
     public void getRandomQuestionTest() {
         try {
             for (int i = 0; i < 5; i ++) {
-                db.insertQuestion(0, 0, "question" + i, "answer" + i);
+                Question q = new Question("question" + i, "answer" + i);
+                db.insertQuestion(0, 0, q);
             }
 
-            String[] actual = db.getRandomQuestion();
-            assertTrue(actual[0].contains("question"));
-            assertTrue(actual[1].contains("answer"));
+            Question q = db.getRandomQuestion();
+            String actualQ = q.getQuestion();
+            assertTrue(actualQ.contains("question"));
         }
         catch (SQLException e) {
             fail();
@@ -98,20 +101,20 @@ public class DatabaseTests {
     @Test
     public void getRandomQuestionWithDifficultyTest() {
         try {
-            db.insertQuestion(0, 2, "Easy", "Easy");
-            db.insertQuestion(1, 2, "Medium", "Medium");
-            db.insertQuestion(2, 2, "Hard", "Hard");
+            db.insertQuestion(0, 2, new Question("Easy", "Easy"));
+            db.insertQuestion(1, 2, new Question("Medium", "Medium"));
+            db.insertQuestion(2, 2, new Question("Hard", "Hard"));
             String expectedQ = "Easy";
-            String[] actual = db.getRandomQuestion(0);
-            assertEquals(expectedQ, actual[0]);
+            Question actualQ = db.getRandomQuestion(0);
+            assertEquals(expectedQ, actualQ.getQuestion());
             
             expectedQ = "Medium";
-            actual = db.getRandomQuestion(1);
-            assertEquals(expectedQ, actual[0]);
+            actualQ = db.getRandomQuestion(1);
+            assertEquals(expectedQ, actualQ.getQuestion());
 
             expectedQ = "Hard";
-            actual = db.getRandomQuestion(2);
-            assertEquals(expectedQ, actual[0]);
+            actualQ = db.getRandomQuestion(2);
+            assertEquals(expectedQ, actualQ.getQuestion());
         }
         catch (SQLException e) {
             fail();
@@ -131,7 +134,8 @@ public class DatabaseTests {
     @Test (expected = IllegalArgumentException.class)
     public void getInvalidQuestion() {
         try {
-            db.insertQuestion(0, 0, "q", "a");
+            Question q = new Question("q", "a");
+            db.insertQuestion(0, 0, q);
             db.getQuestion(10);
         }
         catch (SQLException e) {
@@ -143,13 +147,13 @@ public class DatabaseTests {
     public void getSpecificQuestionTest() {
         try {
             for (int i = 0; i < 5; i++) {
-                db.insertQuestion(0, 0, "question" + i, "answer" + i);
+                Question q = new Question( "question" + i, "answer" + i);
+                db.insertQuestion(0, 0, q);
             }
 
             for (int i = 0; i < 5; i++) {
-                String[] result  = db.getQuestion(i);
-                assertEquals("question"+i,result[0]);
-                assertEquals("answer"+i,result[1]);
+                Question actualQ  = db.getQuestion(i);
+                assertEquals("question"+i, actualQ.getQuestion());
             }
         }
         catch (SQLException e) {
@@ -160,10 +164,11 @@ public class DatabaseTests {
     @Test
     public void getQuestionTotalTest() {
         try {
+            Question q = new Question("q", "a");
             assertEquals(0, db.getQuestionTotal());
-            db.insertQuestion(0, 0, "q", "a");
+            db.insertQuestion(0, 0, q);
             assertEquals(1, db.getQuestionTotal());
-            db.insertQuestion(0, 0, "q", "a");
+            db.insertQuestion(0, 0, q);
             assertEquals(2, db.getQuestionTotal());
             clearQuestions();
             assertEquals(0, db.getQuestionTotal());

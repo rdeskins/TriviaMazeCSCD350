@@ -1,6 +1,5 @@
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 /*
 * Name: Robin Deskins
@@ -69,13 +68,13 @@ public class Database {
         stmt.executeUpdate(sql);
     }
 
-    public boolean insertQuestion(int diffID, int typeID, String question, String answer) throws SQLException{
+    public boolean insertQuestion(int diffID, int typeID, Question q) throws SQLException{
         Connection c = connect();
         Statement stmt = c.createStatement();
         int qID = getQuestionTotal();
         String sql = "INSERT INTO Questions (ID, difficulty_ID, type_ID, question_text, answer_text) " +
             "VALUES (" + qID + ", " + diffID + ", " + typeID + ", " +
-            "'" + question +"', '" + answer + "');";
+            "'" + q.getQuestion() +"', '" + q.getAnswer() + "');";
         stmt.executeUpdate(sql);
 
         c.close();
@@ -92,7 +91,7 @@ public class Database {
         c.close();
     }
 
-    public String[] getRandomQuestion() throws SQLException, IllegalArgumentException {
+    public Question getRandomQuestion() throws SQLException, IllegalArgumentException {
         if (getQuestionTotal() == 0) {
             throw new IllegalArgumentException();
         }
@@ -100,13 +99,14 @@ public class Database {
         Statement stmt = c.createStatement();
         String sql = "SELECT question_text, answer_text FROM Questions ORDER BY RANDOM() LIMIT 1;";
         ResultSet rs = stmt.executeQuery(sql);
-        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+        rs.close();
         stmt.close();
         c.close();
         return result;
     }
 
-    public String[] getRandomQuestion(int difficultyID) throws SQLException, IllegalArgumentException {
+    public Question getRandomQuestion(int difficultyID) throws SQLException, IllegalArgumentException {
         if (getQuestionTotal() == 0) {
             throw new IllegalArgumentException();
         }
@@ -116,13 +116,14 @@ public class Database {
             "WHERE difficulty_ID = " + difficultyID + " " +
             "ORDER BY RANDOM() LIMIT 1;";
         ResultSet rs = stmt.executeQuery(sql);
-        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+        rs.close();
         stmt.close();
         c.close();
         return result;
     }
 
-    public String[] getQuestion(int qID) throws SQLException, IllegalArgumentException {
+    public Question getQuestion(int qID) throws SQLException, IllegalArgumentException {
         if (qID >= getQuestionTotal()) {
             throw new IllegalArgumentException();
         }
@@ -130,7 +131,7 @@ public class Database {
         Statement stmt = c.createStatement();
         String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
         ResultSet rs = stmt.executeQuery(sql);
-        String[] result = {rs.getString("question_text"), rs.getString("answer_text")};
+        Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
         c.close();
         stmt.close();
         return result;
@@ -142,6 +143,7 @@ public class Database {
         String sql = "SELECT COUNT(*) FROM Questions;";
         ResultSet rs = stmt.executeQuery(sql);
         int total = rs.getInt("COUNT(*)");
+        rs.close();
         c.close();
         stmt.close();
         return total;
@@ -156,6 +158,7 @@ public class Database {
         while (rs.next()) {
             results.add(rs.getString("type_ID") + ". " + rs.getString("type"));
         }
+        rs.close();
         c.close();
         stmt.close();
         return results;
@@ -170,6 +173,7 @@ public class Database {
         while (rs.next()) {
             results.add(rs.getString("difficulty_ID") + ". " + rs.getString("difficulty"));
         }
+        rs.close();
         c.close();
         stmt.close();
         return results;

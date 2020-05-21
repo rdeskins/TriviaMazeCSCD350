@@ -11,6 +11,10 @@ public class Question {
         return this.question;
     }
 
+    public String getAnswer() {
+        return this.answer;
+    }
+
     public boolean checkAnswer(String userAnswer) {
         return userAnswer.equals(this.answer);
     }
