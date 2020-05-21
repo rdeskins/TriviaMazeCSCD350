@@ -4,7 +4,7 @@ import java.util.Random;
 
 /*
 * Name: Robin Deskins
-* Descrioption: Code related to creating the database and adding/retrieving data from the database.
+* Description: Code related to creating the database and adding/retrieving data from the database.
 */
 public class Database {
     private String databaseName;
@@ -12,15 +12,20 @@ public class Database {
     public Database(String fileName) throws SQLException {
         this.databaseName = fileName;
         Connection c = connect();
+	    c.close();
+    }
+
+    public void initialize() throws SQLException {
+        Connection c = connect();
         Statement stmt = c.createStatement();
         this.createTables(c, stmt);
         this.insertDefaultDifficulties(c, stmt);
         this.insertDefaultQuestionTypes(c, stmt);
-	    stmt.close();
-	    c.close();
+        stmt.close();
+        c.close();
     }
 
-    private void createTables(Connection c, Statement stmt) throws SQLException {
+    public void createTables(Connection c, Statement stmt) throws SQLException {
         String sql = "CREATE TABLE Questions " +
 	        "(ID INT PRIMARY KEY NOT NULL," +
 	        " difficulty_ID INT NOT NULL, " + 
@@ -40,7 +45,7 @@ public class Database {
         stmt.executeUpdate(sql);
     }
 
-    private boolean insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
+    public void insertDefaultDifficulties(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (0, 'Easy');";
         stmt.executeUpdate(sql);
@@ -50,10 +55,9 @@ public class Database {
         sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
                 "VALUES (2, 'Hard');";
         stmt.executeUpdate(sql);
-        return true;
     }
 
-    private boolean insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
+    public void insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (0, 'True/False');";
         stmt.executeUpdate(sql);
@@ -63,7 +67,6 @@ public class Database {
         sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (2, 'Short Answer');";
         stmt.executeUpdate(sql);
-        return true;
     }
 
     public boolean insertQuestion(int diffID, int typeID, String question, String answer) throws SQLException{
@@ -78,6 +81,15 @@ public class Database {
         c.close();
         stmt.close();
         return true;
+    }
+
+    public void deleteAllQuestions() throws SQLException {
+        Connection c = connect();
+        Statement stmt = c.createStatement();
+        String sql = "DELETE FROM Questions;";
+        stmt.executeUpdate(sql);
+        stmt.close();
+        c.close();
     }
 
     public String[] getRandomQuestion() throws SQLException, IllegalArgumentException {

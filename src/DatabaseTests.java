@@ -24,6 +24,7 @@ public class DatabaseTests {
     public static void setUp() throws SQLException {
         deleteDatabase();
         db = new Database(databaseName);
+        db.initialize();
         c = DriverManager.getConnection("jdbc:sqlite:" + databaseName);
         stmt = c.createStatement();
     }
@@ -56,6 +57,22 @@ public class DatabaseTests {
             ResultSet rs = stmt.executeQuery(sql);
             assertEquals("question", rs.getString("question_text"));
             assertEquals("answer", rs.getString("answer_text"));
+        }
+        catch (SQLException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void deleteAllQuestionsTest() {
+        try {
+            db.insertQuestion(0, 0, "q", "a");
+            db.insertQuestion(0, 0, "q", "a");
+            db.deleteAllQuestions();
+            String sql = "SELECT COUNT(*) FROM Questions;";
+            ResultSet rs = stmt.executeQuery(sql);
+            int total = rs.getInt("COUNT(*)");
+            assertEquals(total, 0);
         }
         catch (SQLException e) {
             fail();
