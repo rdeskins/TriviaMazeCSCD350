@@ -70,13 +70,15 @@ public class Database {
 
     public boolean insertQuestion(int diffID, int typeID, Question q) throws SQLException{
         Connection c = connect();
-        Statement stmt = c.createStatement();
-        int qID = getQuestionTotal();
         String sql = "INSERT INTO Questions (ID, difficulty_ID, type_ID, question_text, answer_text) " +
-            "VALUES (" + qID + ", " + diffID + ", " + typeID + ", " +
-            "'" + q.getQuestion() +"', '" + q.getAnswer() + "');";
-        stmt.executeUpdate(sql);
-
+            "VALUES (?, ?, ?, ?, ?);";
+        PreparedStatement stmt = c.prepareStatement(sql);
+        stmt.setInt(1, getQuestionTotal());
+        stmt.setInt(2, diffID);
+        stmt.setInt(3, typeID);
+        stmt.setString(4, q.getQuestion());
+        stmt.setString(5, q.getAnswer());
+        stmt.executeUpdate();
         c.close();
         stmt.close();
         return true;
@@ -111,11 +113,12 @@ public class Database {
             throw new IllegalArgumentException();
         }
         Connection c = connect();
-        Statement stmt = c.createStatement();
         String sql = "SELECT question_text, answer_text FROM Questions " +
-            "WHERE difficulty_ID = " + difficultyID + " " +
+            "WHERE difficulty_ID=? " +
             "ORDER BY RANDOM() LIMIT 1;";
-        ResultSet rs = stmt.executeQuery(sql);
+        PreparedStatement stmt = c.prepareStatement(sql);
+        stmt.setInt(1, difficultyID);
+        ResultSet rs = stmt.executeQuery();
         Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
         rs.close();
         stmt.close();
@@ -128,9 +131,10 @@ public class Database {
             throw new IllegalArgumentException();
         }
         Connection c = connect();
-        Statement stmt = c.createStatement();
-        String sql = "SELECT question_text, answer_text FROM Questions WHERE ID = " + qID;
-        ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT question_text, answer_text FROM Questions WHERE ID=?;";
+        PreparedStatement stmt = c.prepareStatement(sql);
+        stmt.setInt(1, qID);
+        ResultSet rs = stmt.executeQuery();
         Question result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
         c.close();
         stmt.close();
