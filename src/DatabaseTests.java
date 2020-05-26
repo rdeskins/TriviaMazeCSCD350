@@ -51,11 +51,12 @@ public class DatabaseTests {
     
     @Test
     public void insertQuestionTest() {
+        Question q = new Question("question", "answer");
+        boolean success = db.insertQuestion(0, 0, q);
         try {
-            Question q = new Question("question", "answer");
-            db.insertQuestion(0, 0, q);
             String sql = "SELECT question_text, answer_text FROM Questions;";
             ResultSet rs = stmt.executeQuery(sql);
+            assertEquals(true, success);
             assertEquals("question", rs.getString("question_text"));
             assertEquals("answer", rs.getString("answer_text"));
         }
@@ -66,14 +67,15 @@ public class DatabaseTests {
 
     @Test
     public void deleteAllQuestionsTest() {
+        Question q = new Question("q", "a");
+        db.insertQuestion(0, 0, q);
+        db.insertQuestion(0, 0, q);
+        boolean success = db.deleteAllQuestions();
         try {
-            Question q = new Question("q", "a");
-            db.insertQuestion(0, 0, q);
-            db.insertQuestion(0, 0, q);
-            db.deleteAllQuestions();
             String sql = "SELECT COUNT(*) FROM Questions;";
             ResultSet rs = stmt.executeQuery(sql);
             int total = rs.getInt("COUNT(*)");
+            assertEquals(true, success);
             assertEquals(0, total);
         }
         catch (SQLException e) {
@@ -83,105 +85,81 @@ public class DatabaseTests {
 
     @Test
     public void getRandomQuestionTest() {
-        try {
-            for (int i = 0; i < 5; i ++) {
-                Question q = new Question("question" + i, "answer" + i);
-                db.insertQuestion(0, 0, q);
-            }
-
-            Question q = db.getRandomQuestion();
-            String actualQ = q.getQuestion();
-            assertTrue(actualQ.contains("question"));
+        for (int i = 0; i < 5; i ++) {
+            Question q = new Question("question" + i, "answer" + i);
+            db.insertQuestion(0, 0, q);
         }
-        catch (SQLException e) {
-            fail();
-        }
+        Question q = db.getRandomQuestion();
+        String actualQ = q.getQuestion();
+        assertTrue(actualQ.contains("question"));
     }
 
     @Test
     public void getRandomQuestionWithDifficultyTest() {
-        try {
-            db.insertQuestion(0, 2, new Question("Easy", "Easy"));
-            db.insertQuestion(1, 2, new Question("Medium", "Medium"));
-            db.insertQuestion(2, 2, new Question("Hard", "Hard"));
-            String expectedQ = "Easy";
-            Question actualQ = db.getRandomQuestion(0);
-            assertEquals(expectedQ, actualQ.getQuestion());
+        db.insertQuestion(0, 2, new Question("Easy", "Easy"));
+        db.insertQuestion(1, 2, new Question("Medium", "Medium"));
+        db.insertQuestion(2, 2, new Question("Hard", "Hard"));
+        String expectedQ = "Easy";
+        Question actualQ = db.getRandomQuestion(0);
+        assertEquals(expectedQ, actualQ.getQuestion());
             
-            expectedQ = "Medium";
-            actualQ = db.getRandomQuestion(1);
-            assertEquals(expectedQ, actualQ.getQuestion());
+        expectedQ = "Medium";
+        actualQ = db.getRandomQuestion(1);
+        assertEquals(expectedQ, actualQ.getQuestion());
 
-            expectedQ = "Hard";
-            actualQ = db.getRandomQuestion(2);
-            assertEquals(expectedQ, actualQ.getQuestion());
-        }
-        catch (SQLException e) {
-            fail();
-        }
+        expectedQ = "Hard";
+        actualQ = db.getRandomQuestion(2);
+        assertEquals(expectedQ, actualQ.getQuestion());
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void emptyDatabaseRandomQuestionTest() {
-        try {
-            db.getRandomQuestion();
-        }
-        catch (SQLException e) {
-            fail();
-        }
+        db.getRandomQuestion();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void getInvalidQuestion() {
-        try {
-            Question q = new Question("q", "a");
-            db.insertQuestion(0, 0, q);
-            db.getQuestion(10);
-        }
-        catch (SQLException e) {
-            fail();
-        }
+        Question q = new Question("q", "a");
+        db.insertQuestion(0, 0, q);
+        db.getQuestion(10);
     }
 
     @Test
     public void getSpecificQuestionTest() {
-        try {
-            for (int i = 0; i < 5; i++) {
-                Question q = new Question( "question" + i, "answer" + i);
-                db.insertQuestion(0, 0, q);
-            }
+        for (int i = 0; i < 5; i++) {
+            Question q = new Question( "question" + i, "answer" + i);
+            db.insertQuestion(0, 0, q);
+        }
 
-            for (int i = 0; i < 5; i++) {
-                Question actualQ  = db.getQuestion(i);
-                assertEquals("question"+i, actualQ.getQuestion());
-            }
+        for (int i = 0; i < 5; i++) {
+            Question actualQ  = db.getQuestion(i);
+            assertEquals("question"+i, actualQ.getQuestion());
         }
-        catch (SQLException e) {
-            fail();
-        }
+        
     }
 
     @Test
     public void getQuestionTotalTest() {
+        Question q = new Question("q", "a");
+        assertEquals(0, db.getQuestionTotal());
+        db.insertQuestion(0, 0, q);
+        assertEquals(1, db.getQuestionTotal());
+        db.insertQuestion(0, 0, q);
+        assertEquals(2, db.getQuestionTotal());
         try {
-            Question q = new Question("q", "a");
-            assertEquals(0, db.getQuestionTotal());
-            db.insertQuestion(0, 0, q);
-            assertEquals(1, db.getQuestionTotal());
-            db.insertQuestion(0, 0, q);
-            assertEquals(2, db.getQuestionTotal());
             clearQuestions();
-            assertEquals(0, db.getQuestionTotal());
         }
         catch (SQLException e) {
-
+            fail();
         }
+        assertEquals(0, db.getQuestionTotal());
+        
     }
 
     @Test
     public void getQuestionTypesTest() {
+        ArrayList<String> list = db.getQuestionTypes();
         try {
-            ArrayList<String> list = db.getQuestionTypes();
             String sql = "SELECT type FROM Types;";
             ResultSet rs = stmt.executeQuery(sql);
             int i = 0;
@@ -199,8 +177,8 @@ public class DatabaseTests {
 
     @Test
     public void getDifficultiesTest() {
+        ArrayList<String> list = db.getDifficulties();
         try {
-            ArrayList<String> list = db.getDifficulties();
             String sql = "SELECT difficulty FROM Difficulties;";
             ResultSet rs = stmt.executeQuery(sql);
             int i = 0;
