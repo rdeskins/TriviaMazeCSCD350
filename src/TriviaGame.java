@@ -5,8 +5,7 @@ public class TriviaGame {
     private Maze maze;
     private Database db;
     private Scanner kb;
-    private boolean endConditionMet = false;
-    private final String cheat = "CSCD350";
+    private final String cheat = "cscd350";
 
     public TriviaGame(Maze maze, Database db) {
         this.maze = maze;
@@ -15,49 +14,53 @@ public class TriviaGame {
     }
 
     public void playGame() {
-        int userInput;
-        while (!this.endConditionMet) {
-            System.out.println("Current maze:\n" + this.maze);
+        while (!endConditionMet()) {
+            System.out.println("\nCurrent maze:\n" + this.maze);
             printMenu();
-            userInput = getInput();
-
-            if (userInput == 1) {
-                attemptMoveNorth();
-            }
-            else if (userInput == 2) {
-                attemptMoveSouth();
-            }
-            else if (userInput == 3) {
-                attemptMoveWest();
-            }
-            else if (userInput == 4) {
-                attemptMoveEast();
-            }
-            else return;
-
-            if (winConditionMet()) {
-                System.out.println("You win!");
-                this.endConditionMet = true;
-            }
-            else if (loseConditionMet()) {
-                System.out.println("You lose :(");
-                this.endConditionMet = true;
-            }
+            if(takeTurn(getInput())) return;
         }
-        System.out.println("Final maze:\n" + this.maze);
+        System.out.println("\nFinal maze:\n" + this.maze);
+    }
 
+    private boolean takeTurn(String userInput) {
+        if (userInput.equals("w")) {
+            attemptMoveNorth();
+        }
+        else if (userInput.equals("s")) {
+            attemptMoveSouth();
+        }
+        else if (userInput.equals("a")) {
+            attemptMoveWest();
+        }
+        else if (userInput.equals("d")) {
+            attemptMoveEast();
+        }
+        else if (userInput.equals("e")) {
+            saveGame();
+        }
+        else if (userInput.equals("q")) {
+            System.out.println("Returning to Main Menu");
+            return true;
+        }
+        else {
+            System.out.println("Invalid input");
+        }
+        return false;
     }
 
     private boolean askQuestion() {
         String input = "";
         Question question = db.getRandomQuestion();
         System.out.println(question.getQuestion());
-        input = kb.nextLine();
+        input = getInput();
         return checkAnswer(input, question);
     }
 
     private void attemptMoveNorth() {
-        if (askQuestion()) {
+        if (!this.maze.playerNorthDoorUnlocked()) {
+            System.out.println("Cannot move North. The North door is locked!");
+        }
+        else if (askQuestion()) {
             System.out.println("Correct!");
             this.maze.moveNorth();
         }
@@ -68,7 +71,10 @@ public class TriviaGame {
     }
 
     private void attemptMoveSouth() {
-        if (askQuestion()) {
+        if (!this.maze.playerSouthDoorUnlocked()) {
+            System.out.println("Cannot move South. The South door is locked!");
+        }
+        else if (askQuestion()) {
             System.out.println("Correct!");
             this.maze.moveSouth();
         }
@@ -79,7 +85,10 @@ public class TriviaGame {
     }
 
     private void attemptMoveWest() {
-        if (askQuestion()) {
+        if (!this.maze.playerWestDoorUnlocked()) {
+            System.out.println("Cannot move West. The West door is locked!");
+        }
+        else if (askQuestion()) {
             System.out.println("Correct!");
             this.maze.moveWest();
         }
@@ -90,7 +99,10 @@ public class TriviaGame {
     }
 
     private void attemptMoveEast() {
-        if (askQuestion()) {
+        if (!this.maze.playerEastDoorUnlocked()) {
+            System.out.println("Cannot move East. The East door is locked!");
+        }
+        else if (askQuestion()) {
             System.out.println("Correct!");
             this.maze.moveEast();
         }
@@ -106,34 +118,35 @@ public class TriviaGame {
 
     private void printMenu() {
         System.out.println("What would you like to do?\n" + 
-                           "1) Move North\n" + 
-                           "2) Move South\n" + 
-                           "3) Move West\n" + 
-                           "4) Move East\n" + 
-                           "5) Save Game\n" + 
-                           "6) Return to Main Menu\n");
+                           "W) Move North\n" + 
+                           "S) Move South\n" + 
+                           "A) Move West\n" + 
+                           "D) Move East\n" + 
+                           "E) Save Game\n" + 
+                           "Q) Return to Main Menu\n");
     }
 
-    private int getInput() {
-        int choice = 0;
-        while (choice < 1 || choice > 6) {
-            try {
-                choice = Integer.parseInt(kb.nextLine());
-                if (choice < 1 || choice > 6)
-                    System.out.println("User choice must be between 1 and 6");
-            }
-            catch(NumberFormatException e) {
-                System.out.println("User choice must be an integer between 1 and 6");
-            }
+    protected String getInput() {
+        String userInput;
+        userInput = kb.nextLine();
+        userInput = userInput.toLowerCase();
+        return userInput;
+    }
+
+    private boolean endConditionMet() {
+        boolean gameOver = false;
+        if (this.maze.goalReached()) {
+            System.out.println("You win!");
+            gameOver = true;
         }
-        return choice;
+        else if (!this.maze.pathToGoalExists()) {
+            System.out.println("You lose :(");
+            gameOver = true;
+        }
+        return gameOver;
     }
 
-    private boolean winConditionMet() { // redundant
-        return this.maze.goalReached();
-    }
-
-    private boolean loseConditionMet() { // redundant
-        return !this.maze.pathToGoalExists();
+    private void saveGame(){
+        System.out.println("Saving game (not really)");
     }
 }

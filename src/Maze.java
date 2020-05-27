@@ -167,4 +167,20 @@ public class Maze {
     public void lockEastDoor() {
         this.maze[playerRow][playerColumn].lockEastDoor();
     }
+
+    public boolean playerNorthDoorUnlocked() {
+        return this.maze[playerRow][playerColumn].northDoorUnlocked();
+    }
+
+    public boolean playerSouthDoorUnlocked() {
+        return this.maze[playerRow][playerColumn].southDoorUnlocked();
+    }
+
+    public boolean playerWestDoorUnlocked() {
+        return this.maze[playerRow][playerColumn].westDoorUnlocked();
+    }
+
+    public boolean playerEastDoorUnlocked() {
+        return this.maze[playerRow][playerColumn].eastDoorUnlocked();
+    }
 }
