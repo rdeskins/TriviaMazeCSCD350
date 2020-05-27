@@ -151,4 +151,20 @@ public class Maze {
     public boolean goalReached() {
         return (this.playerRow == this.goalRow && this.playerColumn == this.goalColumn);
     }
+
+    public void lockNorthDoor() {
+        this.maze[playerRow][playerColumn].lockNorthDoor();
+    }
+
+    public void lockSouthDoor() {
+        this.maze[playerRow][playerColumn].lockSouthDoor();
+    }
+
+    public void lockWestDoor() {
+        this.maze[playerRow][playerColumn].lockWestDoor();
+    }
+
+    public void lockEastDoor() {
+        this.maze[playerRow][playerColumn].lockEastDoor();
+    }
 }

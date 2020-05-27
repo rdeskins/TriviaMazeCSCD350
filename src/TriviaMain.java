@@ -61,7 +61,7 @@ public class TriviaMain {
     }
 
     private static void newGame() {
-        TriviaGame game = new TriviaGame(new Maze(4));
+        TriviaGame game = new TriviaGame(new Maze(4), db);
         game.playGame();
     }
 
