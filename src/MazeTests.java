@@ -346,4 +346,72 @@ public class MazeTests {
         assertTrue(maze.goalReached());
     }
 
+    @Test
+    public void playerNorthDoorUnlockedFalse() {
+        Maze maze = new Maze(4);
+
+        assertFalse(maze.playerNorthDoorUnlocked());
+    }
+
+    @Test
+    public void playerNorthDoorUnlockedTrue() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field playerRow = Maze.class.getDeclaredField("playerRow");
+        playerRow.setAccessible(true);
+        playerRow.set(maze, 1);
+
+        assertTrue(maze.playerNorthDoorUnlocked());
+    }
+    
+    @Test
+    public void playerSouthDoorUnlockedFalse() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field playerRow = Maze.class.getDeclaredField("playerRow");
+        playerRow.setAccessible(true);
+        playerRow.set(maze, 3);
+
+        assertFalse(maze.playerSouthDoorUnlocked());
+    }
+
+    @Test
+    public void playerSouthDoorUnlockedTrue() {
+        Maze maze = new Maze(4);
+
+        assertTrue(maze.playerSouthDoorUnlocked());
+    }
+
+    @Test
+    public void playerWestDoorUnlockedFalse() {
+        Maze maze = new Maze(4);
+
+        assertFalse(maze.playerWestDoorUnlocked());
+    }
+
+    @Test
+    public void playerWestDoorUnlockedTrue() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field playerColumn = Maze.class.getDeclaredField("playerColumn");
+        playerColumn.setAccessible(true);
+        playerColumn.set(maze, 1);
+
+        assertTrue(maze.playerWestDoorUnlocked());
+    }
+
+    @Test
+    public void playerEastDoorUnlockedFalse() throws NoSuchFieldException, IllegalAccessException {
+        Maze maze = new Maze(4);
+        Field playerColumn = Maze.class.getDeclaredField("playerColumn");
+        playerColumn.setAccessible(true);
+        playerColumn.set(maze, 3);
+
+        assertFalse(maze.playerEastDoorUnlocked());
+    }
+
+    @Test
+    public void playerEastDoorUnlockedTrue() {
+        Maze maze = new Maze(4);
+
+        assertTrue(maze.playerEastDoorUnlocked());
+    }
+
 }

@@ -1,20 +1,152 @@
 
+import java.util.Scanner;
+
 public class TriviaGame {
     private Maze maze;
+    private Database db;
+    private Scanner kb;
+    private final String cheat = "cscd350";
 
-    public TriviaGame(Maze maze) {
+    public TriviaGame(Maze maze, Database db) {
         this.maze = maze;
+        this.db = db;
+        this.kb = new Scanner(System.in);
     }
 
     public void playGame() {
-        //game logic
+        while (!endConditionMet()) {
+            System.out.println("\nCurrent maze:\n" + this.maze);
+            printMenu();
+            if(takeTurn(getInput())) return;
+        }
+        System.out.println("\nFinal maze:\n" + this.maze);
     }
 
-    private boolean winConditionMet() { // redundant
-        return this.maze.goalReached();
+    private boolean takeTurn(String userInput) {
+        if (userInput.equals("w")) {
+            attemptMoveNorth();
+        }
+        else if (userInput.equals("s")) {
+            attemptMoveSouth();
+        }
+        else if (userInput.equals("a")) {
+            attemptMoveWest();
+        }
+        else if (userInput.equals("d")) {
+            attemptMoveEast();
+        }
+        else if (userInput.equals("e")) {
+            saveGame();
+        }
+        else if (userInput.equals("q")) {
+            System.out.println("Returning to Main Menu");
+            return true;
+        }
+        else {
+            System.out.println("Invalid input");
+        }
+        return false;
     }
 
-    private boolean loseConditionMet() { // redundant
-        return !this.maze.pathToGoalExists();
+    private boolean askQuestion() {
+        String input = "";
+        Question question = db.getRandomQuestion();
+        System.out.println(question.getQuestion());
+        input = getInput();
+        return checkAnswer(input, question);
+    }
+
+    private void attemptMoveNorth() {
+        if (!this.maze.playerNorthDoorUnlocked()) {
+            System.out.println("Cannot move North. The North door is locked!");
+        }
+        else if (askQuestion()) {
+            System.out.println("Correct!");
+            this.maze.moveNorth();
+        }
+        else {
+            System.out.println("Incorrect answer, North door will be locked.");
+            this.maze.lockNorthDoor();
+        }
+    }
+
+    private void attemptMoveSouth() {
+        if (!this.maze.playerSouthDoorUnlocked()) {
+            System.out.println("Cannot move South. The South door is locked!");
+        }
+        else if (askQuestion()) {
+            System.out.println("Correct!");
+            this.maze.moveSouth();
+        }
+        else {
+            System.out.println("Incorrect answer, South door will be locked.");
+            this.maze.lockSouthDoor();
+        }
+    }
+
+    private void attemptMoveWest() {
+        if (!this.maze.playerWestDoorUnlocked()) {
+            System.out.println("Cannot move West. The West door is locked!");
+        }
+        else if (askQuestion()) {
+            System.out.println("Correct!");
+            this.maze.moveWest();
+        }
+        else {
+            System.out.println("Incorrect answer, West door will be locked.");
+            this.maze.lockWestDoor();
+        }
+    }
+
+    private void attemptMoveEast() {
+        if (!this.maze.playerEastDoorUnlocked()) {
+            System.out.println("Cannot move East. The East door is locked!");
+        }
+        else if (askQuestion()) {
+            System.out.println("Correct!");
+            this.maze.moveEast();
+        }
+        else {
+            System.out.println("Incorrect answer, East door will be locked.");
+            this.maze.lockEastDoor();
+        }
+    }
+
+    private boolean checkAnswer(String userAnswer, Question question) {
+        return userAnswer.equals(this.cheat) || userAnswer.equals(question.getAnswer());
+    }
+
+    private void printMenu() {
+        System.out.println("What would you like to do?\n" + 
+                           "W) Move North\n" + 
+                           "S) Move South\n" + 
+                           "A) Move West\n" + 
+                           "D) Move East\n" + 
+                           "E) Save Game\n" + 
+                           "Q) Return to Main Menu\n");
+    }
+
+    protected String getInput() {
+        String userInput;
+        userInput = kb.nextLine();
+        userInput = userInput.toLowerCase();
+        return userInput;
+    }
+
+    private boolean endConditionMet() {
+        boolean gameOver = false;
+        if (this.maze.goalReached()) {
+            System.out.println("You win!");
+            gameOver = true;
+        }
+        else if (!this.maze.pathToGoalExists()) {
+            System.out.println("You lose :(");
+            gameOver = true;
+        }
+        return gameOver;
+    }
+
+    private void saveGame(){
+        System.out.println("Saving game (not really)");
     }
 }
