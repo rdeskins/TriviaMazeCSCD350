@@ -3,6 +3,7 @@
 * Description: Trivia game's main. Menu traversal is handled here. 
 */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -26,7 +27,12 @@ public class TriviaMain {
     "4) Return\n";
 
     public static void main(String[] args) {
+        File dbFile = new File(databaseName);
+        boolean firstUse = !dbFile.exists();
         db = new Database(databaseName);
+        if (firstUse) {
+            db.initialize();
+        }
         mainMenu();
     }
 

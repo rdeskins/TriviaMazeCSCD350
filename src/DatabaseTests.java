@@ -97,14 +97,9 @@ public class DatabaseTests {
     @Test
     public void getRandomQuestionWithDifficultyTest() {
         db.insertQuestion(0, 2, new Question("Easy", "Easy"));
-        db.insertQuestion(1, 2, new Question("Medium", "Medium"));
         db.insertQuestion(2, 2, new Question("Hard", "Hard"));
         String expectedQ = "Easy";
         Question actualQ = db.getRandomQuestion(0);
-        assertEquals(expectedQ, actualQ.getQuestion());
-            
-        expectedQ = "Medium";
-        actualQ = db.getRandomQuestion(1);
         assertEquals(expectedQ, actualQ.getQuestion());
 
         expectedQ = "Hard";
