@@ -65,10 +65,7 @@ public class Database {
                 "VALUES (0, 'Easy');";
         stmt.executeUpdate(sql);
         sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
-                "VALUES (1, 'Medium');";
-        stmt.executeUpdate(sql);
-        sql = "INSERT INTO Difficulties (difficulty_ID, difficulty) " +
-                "VALUES (2, 'Hard');";
+                "VALUES (1, 'Hard');";
         stmt.executeUpdate(sql);
     }
 
