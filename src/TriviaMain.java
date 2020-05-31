@@ -67,7 +67,7 @@ public class TriviaMain {
     }
 
     private static void newGame() {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db);
         game.playGame();
     }
 
@@ -208,5 +208,24 @@ public class TriviaMain {
         System.out.println("Coming soon.");
         //Not implemented
         System.out.println("Returning to admin options menu.");
+    }
+
+    private static int getMazeSize() {
+        int size = 0;
+        System.out.println("Enter the preferred size of the square maze:");
+        while (invalidMazeSize(size)) {
+            System.out.println("Input size must be no less than 4 and no greater than 8");
+            try {
+                size = Integer.parseInt(kb.nextLine());
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Input must be an Integer!");
+            }
+        }
+        return size;
+    }
+
+    private static boolean invalidMazeSize(int size) {
+        return size < 4 || size > 8;
     }
 }
