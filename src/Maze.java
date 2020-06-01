@@ -1,5 +1,6 @@
 
-public class Maze {
+public class Maze implements java.io.Serializable{
+    private static final long serialVersionUID = 7899501743041365523L;
     private Room[][] maze;
     private int mazeSize, playerRow, playerColumn, goalRow, goalColumn;
 

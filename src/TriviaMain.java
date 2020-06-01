@@ -4,12 +4,15 @@
 */
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TriviaMain {
     private static Database db;
     private static Scanner kb;
+    private static final String saveName = "SavedGame.txt";
     private static final String databaseName = "trivia.db";
     private static final String adminPassword = "password";
     private static final String mainMenuText = 
@@ -72,7 +75,24 @@ public class TriviaMain {
     }
 
     private static void loadGame() {
+        Maze maze;
+        try {
+            FileInputStream file = new FileInputStream(saveName);
+            ObjectInputStream in = new ObjectInputStream(file);
 
+            maze = (Maze) in.readObject();
+
+            in.close();
+            file.close();
+            
+            System.out.println("Game loaded successfully!");
+            
+            TriviaGame game = new TriviaGame(maze, db);
+            game.playGame();
+        }
+        catch (Exception e) {
+            System.out.println("Failed to load game.");
+        }
     }
 
     private static void adminMenu() {
