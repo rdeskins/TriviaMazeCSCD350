@@ -1,4 +1,6 @@
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 public class TriviaGame {
@@ -6,6 +8,7 @@ public class TriviaGame {
     private Database db;
     private Scanner kb;
     private final String cheat = "cscd350";
+    private String saveName = "SavedGame.txt";
 
     public TriviaGame(Maze maze, Database db) {
         this.maze = maze;
@@ -147,6 +150,18 @@ public class TriviaGame {
     }
 
     private void saveGame(){
-        System.out.println("Saving game (not really)");
+        try {
+            FileOutputStream file = new FileOutputStream(this.saveName);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+            out.writeObject(this.maze);
+
+            out.close();
+            file.close();
+
+            System.out.println("The game has been saved.");
+        }
+        catch (Exception e) {
+            System.out.println("Failed to save the game.");
+        }
     }
 }

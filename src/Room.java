@@ -1,5 +1,6 @@
 
-public class Room {
+public class Room implements java.io.Serializable{
+    private static final long serialVersionUID = 6638522852046318769L;
     private Door northDoor, southDoor, westDoor, eastDoor;
     private boolean visited = false;
 

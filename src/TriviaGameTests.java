@@ -1,6 +1,8 @@
 
 import static org.junit.Assert.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -9,6 +11,7 @@ import java.lang.reflect.*;
 
 public class TriviaGameTests {
     private static String databaseName = "test.db";
+    private static String saveName = "testSave.txt";
     private static Database db;
 
     @BeforeClass
@@ -21,6 +24,11 @@ public class TriviaGameTests {
     @AfterClass
     public static void afterClass() {
         File file = new File (databaseName);
+        if (file.exists()) {
+            file.delete();
+        }
+
+        file = new File (saveName);
         if (file.exists()) {
             file.delete();
         }
@@ -559,6 +567,135 @@ public class TriviaGameTests {
         boolean result = (boolean) sut.invoke(game, "blah");
 
         assertFalse(result);
+    }
+
+    @Test
+    public void saveGameSuccess() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        TriviaGame game = new TriviaGame(new Maze(4), db);
+        Method sut = TriviaGame.class.getDeclaredMethod("saveGame");
+        sut.setAccessible(true);
+        Field field = TriviaGame.class.getDeclaredField("saveName");
+        field.setAccessible(true);
+        field.set(game, saveName);
+
+        sut.invoke(game);
+
+        Maze maze = null;
+
+        try {
+            FileInputStream file = new FileInputStream(saveName);
+            ObjectInputStream in = new ObjectInputStream(file);
+
+            maze = (Maze) in.readObject();
+
+            in.close();
+            file.close();
+        }
+        catch (Exception e) {
+            fail();
+        }
+
+        String expected = "*****************\n" +
+                          "* P |   |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   | G *\n" +
+                          "*****************";
+
+        assertTrue(expected.equals(maze.toString()));
+    }
+
+    @Test
+    public void saveGameDoorsSharedAfterLoadSuccess() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        Maze maze = new Maze(4);
+        Method lockDoor = Maze.class.getDeclaredMethod("lockEastDoor");
+        lockDoor.setAccessible(true);
+        lockDoor.invoke(maze);
+        TriviaGame game = new TriviaGame(maze, db);
+        Method sut = TriviaGame.class.getDeclaredMethod("saveGame");
+        sut.setAccessible(true);
+        Field field = TriviaGame.class.getDeclaredField("saveName");
+        field.setAccessible(true);
+        field.set(game, saveName);
+        
+        sut.invoke(game);
+        
+        Maze maze2 = null;
+        
+        try {
+            FileInputStream file = new FileInputStream(saveName);
+            ObjectInputStream in = new ObjectInputStream(file);
+            
+            maze2 = (Maze) in.readObject();
+            
+            in.close();
+            file.close();
+        }
+        catch (Exception e) {
+            fail();
+        }
+        
+        assertFalse(maze2.playerEastDoorUnlocked());
+        Field fieldMaze = Maze.class.getDeclaredField("maze");
+        fieldMaze.setAccessible(true);
+        Room[][] internalMaze = (Room[][]) fieldMaze.get(maze2);
+        Room room1 = internalMaze[0][0];
+        Room room2 = internalMaze[0][1];
+        Field eastDoor = Room.class.getDeclaredField("eastDoor");
+        eastDoor.setAccessible(true);
+        Field westDoor = Room.class.getDeclaredField("westDoor");
+        westDoor.setAccessible(true);
+        Door door1 = (Door) eastDoor.get(room1);
+        Door door2 = (Door) westDoor.get(room2);
+        assertEquals(door1, door2);
+        assertFalse(door1.isUnlocked());
+        assertFalse(door2.isUnlocked());
+    }
+
+    @Test
+    public void saveGamePlayerLocationSaved() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        TriviaGame game = new MockTriviaGame("answer");
+        Method sut = TriviaGame.class.getDeclaredMethod("saveGame");
+        sut.setAccessible(true);
+        Field field = TriviaGame.class.getDeclaredField("saveName");
+        field.setAccessible(true);
+        field.set(game, saveName);
+
+        Method moveEast = TriviaGame.class.getDeclaredMethod("takeTurn", String.class);
+        moveEast.setAccessible(true);
+        moveEast.invoke(game, "d");
+
+        sut.invoke(game);
+
+        Maze maze = null;
+
+        try {
+            FileInputStream file = new FileInputStream(saveName);
+            ObjectInputStream in = new ObjectInputStream(file);
+
+            maze = (Maze) in.readObject();
+
+            in.close();
+            file.close();
+        }
+        catch (Exception e) {
+            fail();
+        }
+
+        String expected = "*****************\n" +
+                          "*   | P |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   |   *\n" +
+                          "*---*---*---*---*\n" +
+                          "*   |   |   | G *\n" +
+                          "*****************";
+
+        assertTrue(expected.equals(maze.toString()));
     }
 
     private class MockTriviaGame extends TriviaGame {
