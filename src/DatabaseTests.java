@@ -98,13 +98,39 @@ public class DatabaseTests {
     public void getRandomQuestionWithDifficultyTest() {
         db.insertQuestion(0, 2, new Question("Easy", "Easy"));
         db.insertQuestion(2, 2, new Question("Hard", "Hard"));
-        String expectedQ = "Easy";
-        Question actualQ = db.getRandomQuestion(0);
-        assertEquals(expectedQ, actualQ.getQuestion());
+        String expectedDiff = "Easy";
+        Question q = db.getRandomQuestion(0);
+        String actualQ = q.getQuestion();
+        assertTrue(actualQ.contains(expectedDiff));
 
-        expectedQ = "Hard";
-        actualQ = db.getRandomQuestion(2);
-        assertEquals(expectedQ, actualQ.getQuestion());
+        expectedDiff = "Hard";
+        q = db.getRandomQuestion(2);
+        actualQ = q.getQuestion();
+        assertTrue(actualQ.contains(expectedDiff));
+    }
+
+    @Test
+    public void questionTypeTest() {
+        db.insertQuestion(0, 0, new Question("test","test"));
+        String expectedType = "True or False";
+        Question q = db.getRandomQuestion();
+        String actualQ = q.getQuestion();
+        assertTrue(actualQ.contains(expectedType));
+        db.deleteAllQuestions();
+
+        db.insertQuestion(0, 1, new Question("test","test"));
+        expectedType = "Multiple Choice";
+        q = db.getRandomQuestion();
+        actualQ = q.getQuestion();
+        assertTrue(actualQ.contains(expectedType));
+        db.deleteAllQuestions();
+
+        db.insertQuestion(0, 2, new Question("test","test"));
+        expectedType = "Short Answer";
+        q = db.getRandomQuestion();
+        actualQ = q.getQuestion();
+        assertTrue(actualQ.contains(expectedType));
+        db.deleteAllQuestions();
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -127,8 +153,9 @@ public class DatabaseTests {
         }
 
         for (int i = 0; i < 5; i++) {
-            Question actualQ  = db.getQuestion(i);
-            assertEquals("question"+i, actualQ.getQuestion());
+            Question q  = db.getQuestion(i);
+            String actualQ = q.getQuestion();
+            assertTrue(actualQ.contains("question" + i));
         }
         
     }

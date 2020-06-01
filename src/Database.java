@@ -71,7 +71,7 @@ public class Database {
 
     private void insertDefaultQuestionTypes(Connection c, Statement stmt) throws SQLException {
         String sql = "INSERT INTO Types (Type_ID, type) " +
-            "VALUES (0, 'True/False');";
+            "VALUES (0, 'True or False');";
         stmt.executeUpdate(sql);
         sql = "INSERT INTO Types (Type_ID, type) " +
             "VALUES (1, 'Multiple Choice');";
@@ -150,9 +150,10 @@ public class Database {
         try {
             c = connect();
             stmt = c.createStatement();
-            String sql = "SELECT question_text, answer_text FROM Questions ORDER BY RANDOM() LIMIT 1;";
+            String sql = "SELECT type_id, question_text, answer_text FROM Questions ORDER BY RANDOM() LIMIT 1;";
             rs = stmt.executeQuery(sql);
-            result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+            String typeString = getTypeString(rs.getInt("type_id"), c);
+            result = new Question(typeString + ": " + rs.getString("question_text"), rs.getString("answer_text"));
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -178,13 +179,14 @@ public class Database {
         ResultSet rs = null;
         try {
             c = connect();
-            String sql = "SELECT question_text, answer_text FROM Questions " +
+            String sql = "SELECT type_id, question_text, answer_text FROM Questions " +
                 "WHERE difficulty_ID=? " +
                 "ORDER BY RANDOM() LIMIT 1;";
             stmt = c.prepareStatement(sql);
             stmt.setInt(1, difficultyID);
             rs = stmt.executeQuery();
-            result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+            String typeString = getTypeString(rs.getInt("type_id"), c);
+            result = new Question(typeString + ": " + rs.getString("question_text"), rs.getString("answer_text"));
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -210,11 +212,12 @@ public class Database {
         ResultSet rs = null;
         try {
             c = connect();
-            String sql = "SELECT question_text, answer_text FROM Questions WHERE ID=?;";
+            String sql = "SELECT type_id, question_text, answer_text FROM Questions WHERE ID=?;";
             stmt = c.prepareStatement(sql);
             stmt.setInt(1, qID);
             rs = stmt.executeQuery();
-            result = new Question(rs.getString("question_text"), rs.getString("answer_text"));
+            String typeString = getTypeString(rs.getInt("type_id"), c);
+            result = new Question(typeString + ": " + rs.getString("question_text"), rs.getString("answer_text"));
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -227,6 +230,16 @@ public class Database {
                 e.printStackTrace();
             }
         }
+        return result;
+    }
+
+    private String getTypeString(int typeID, Connection c) throws SQLException {
+        Statement stmt = c.createStatement();
+        String sql = "SELECT type FROM Types WHERE type_id = " + typeID + ";";
+        ResultSet rs = stmt.executeQuery(sql);
+        String result = rs.getString("type");
+        stmt.close();
+        rs.close();
         return result;
     }
 
