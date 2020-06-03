@@ -94,7 +94,8 @@ public class Database {
             stmt.setInt(2, diffID);
             stmt.setInt(3, typeID);
             stmt.setString(4, q.getQuestion());
-            stmt.setString(5, q.getAnswer());
+            String answer = q.getAnswer().toLowerCase();
+            stmt.setString(5, answer);
             stmt.executeUpdate();
             success = true;
         }
