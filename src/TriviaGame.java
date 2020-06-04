@@ -4,13 +4,13 @@ import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 public class TriviaGame {
-    private Maze maze;
-    private Database db;
+    private IMaze maze;
+    private IDatabase db;
     private Scanner kb;
     private final String cheat = "cscd350";
     private String saveName = "SavedGame.txt";
 
-    public TriviaGame(Maze maze, Database db) {
+    public TriviaGame(IMaze maze, IDatabase db) {
         this.maze = maze;
         this.db = db;
         this.kb = new Scanner(System.in);
