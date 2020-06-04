@@ -6,8 +6,10 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Scanner;
+import static java.nio.file.StandardCopyOption.*;
 
 public class TriviaMain {
     private static Database db;
@@ -27,7 +29,8 @@ public class TriviaMain {
     "1) Add Trivia\n" +
     "2) Clear database\n" +
     "3) Reset database\n" +
-    "4) Return\n";
+    "4) Use Extra Simple Trivia\n" +
+    "5) Return\n";
 
     public static void main(String[] args) {
         File dbFile = new File(databaseName);
@@ -70,8 +73,13 @@ public class TriviaMain {
     }
 
     private static void newGame() {
-        TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db);
-        game.playGame();
+        if (db.getQuestionTotal() > 0) {
+            TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db);
+            game.playGame();
+        }
+        else {
+            System.out.println("Sorry! The database has no questions. You can't play the game right now!");
+        }
     }
 
     private static void loadGame() {
@@ -117,16 +125,19 @@ public class TriviaMain {
                     resetDatabase();
                 }
                 else if (menuInput == 4) {
+                    useSimpleDatabase();
+                }
+                else if (menuInput == 5) {
                     System.out.println("Returning to main menu.");
                 }
                 else{
-                    System.out.println("Invalid input: must be between 1 and 4");
+                    System.out.println("Invalid input: must be between 1 and 5");
                 }
             }
             catch (NumberFormatException e) {
                 System.out.println("Invalid input: must be an integer.");
             }
-        } while (menuInput != 4);
+        } while (menuInput != 5);
     }
 
     private static boolean checkAdmin() {
@@ -141,6 +152,9 @@ public class TriviaMain {
             int typeID = takeType();
             int diffID = takeDifficulty();
             String questionText = takeQuestion();
+            if (typeID == 1) {
+                questionText += takeChoices();
+            }
             String answerText = takeAnswer();
             Question question = new Question(questionText, answerText);
             boolean result = db.insertQuestion(diffID, typeID, question);
@@ -200,6 +214,16 @@ public class TriviaMain {
         return input;
     }
 
+    private static String takeChoices() {
+        String[] letters = {"a", "b", "c", "d"};
+        String result = "\n";
+        for (int i = 0; i < 4; i++) {
+            System.out.println("Enter choice " + letters[i]);
+            result += letters[i] + ".) " + kb.nextLine() + "\n";
+        }
+        return result;
+    }
+
     private static String takeQuestion() {
         System.out.println("What is the question?");
         return kb.nextLine();
@@ -225,8 +249,36 @@ public class TriviaMain {
     }
 
     private static void resetDatabase() {
-        System.out.println("Coming soon.");
-        //Not implemented
+        System.out.println("Are you sure you want to reset the database? All new questions added will be erased and" +
+            " replaced with default questions. Y/N");
+        if (kb.nextLine().equalsIgnoreCase("Y")) {
+            File defaultDb = new File("defaultTrivia.db");
+            File currentDb = new File("trivia.db");
+            try {
+                Files.copy(defaultDb.toPath(), currentDb.toPath(), REPLACE_EXISTING);
+                System.out.println("Database successfully reset.");
+            }
+            catch (Exception e) {
+                System.out.println("Sorry, database could not be reset.");
+            }
+        }
+        System.out.println("Returning to admin options menu.");
+    }
+
+    private static void useSimpleDatabase() {
+        System.out.println("Are you sure? All new questions you added will be erased. This option uses a database " +
+        "with simple questions. It is inteded for testing purposes. Y/N");
+        if (kb.nextLine().equalsIgnoreCase("Y")) {
+            File testDb = new File("testTrivia.db");
+            File currentDb = new File("trivia.db");
+            try {
+                Files.copy(testDb.toPath(), currentDb.toPath(), REPLACE_EXISTING);
+                System.out.println("Database successfully reset.");
+            }
+            catch (Exception e) {
+                System.out.println("Sorry, database could not be reset.");
+            }
+        }
         System.out.println("Returning to admin options menu.");
     }
 
