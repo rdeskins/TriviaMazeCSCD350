@@ -73,8 +73,13 @@ public class TriviaMain {
     }
 
     private static void newGame() {
-        TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db);
-        game.playGame();
+        if (db.getQuestionTotal() > 0) {
+            TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db);
+            game.playGame();
+        }
+        else {
+            System.out.println("Sorry! The database has no questions. You can't play the game right now!");
+        }
     }
 
     private static void loadGame() {
