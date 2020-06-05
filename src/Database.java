@@ -174,6 +174,11 @@ public class Database implements IDatabase{
         if (getQuestionTotal() == 0) {
             throw new IllegalArgumentException();
         }
+
+        if (difficultyID == 2) {
+            return getRandomQuestion();
+        }
+
         Question result = null;
         Connection c = null;
         PreparedStatement stmt = null;

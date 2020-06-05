@@ -36,7 +36,7 @@ public class TriviaGameTests {
 
     @Test
     public void checkAnswerTrue() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(4), db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("checkAnswer", String.class, Question.class);
         sut.setAccessible(true);
 
@@ -47,7 +47,7 @@ public class TriviaGameTests {
 
     @Test
     public void checkAnswerFalse() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(4), db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("checkAnswer", String.class, Question.class);
         sut.setAccessible(true);
 
@@ -58,7 +58,7 @@ public class TriviaGameTests {
 
     @Test
     public void checkAnswerUsingCheatTrue() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(4), db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("checkAnswer", String.class, Question.class);
         sut.setAccessible(true);
 
@@ -102,7 +102,7 @@ public class TriviaGameTests {
 
     @Test
     public void endConditionMetFalse() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(4), db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("endConditionMet");
         sut.setAccessible(true);
 
@@ -121,7 +121,7 @@ public class TriviaGameTests {
         Room[][] testMaze = (Room[][]) fieldMaze.get(maze);
         testMaze[0][0].lockEastDoor();
         testMaze[0][0].lockSouthDoor();
-        TriviaGame game = new TriviaGame(maze, db);
+        TriviaGame game = new TriviaGame(maze, db, 2);
 
         boolean result = (boolean) sut.invoke(game);
 
@@ -139,7 +139,7 @@ public class TriviaGameTests {
         playerColumn.setAccessible(true);
         playerRow.set(maze, 3);
         playerColumn.set(maze, 3);
-        TriviaGame game = new TriviaGame(maze, db);
+        TriviaGame game = new TriviaGame(maze, db, 2);
 
         boolean result = (boolean) sut.invoke(game);
 
@@ -442,7 +442,7 @@ public class TriviaGameTests {
 
     @Test
     public void takeTurnQuitReturnTrue() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(4), db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("takeTurn", String.class);
         sut.setAccessible(true);
 
@@ -571,7 +571,7 @@ public class TriviaGameTests {
 
     @Test
     public void saveGameSuccess() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
-        TriviaGame game = new TriviaGame(new Maze(4), db);
+        TriviaGame game = new TriviaGame(new Maze(4), db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("saveGame");
         sut.setAccessible(true);
         Field field = TriviaGame.class.getDeclaredField("saveName");
@@ -614,7 +614,7 @@ public class TriviaGameTests {
         Method lockDoor = Maze.class.getDeclaredMethod("lockEastDoor");
         lockDoor.setAccessible(true);
         lockDoor.invoke(maze);
-        TriviaGame game = new TriviaGame(maze, db);
+        TriviaGame game = new TriviaGame(maze, db, 2);
         Method sut = TriviaGame.class.getDeclaredMethod("saveGame");
         sut.setAccessible(true);
         Field field = TriviaGame.class.getDeclaredField("saveName");
@@ -702,7 +702,7 @@ public class TriviaGameTests {
         private String userAnswer;
 
         private MockTriviaGame(String userAnswer) {
-            super(new Maze(4), db);
+            super(new Maze(4), db, 2);
             this.userAnswer = userAnswer;
         }
 

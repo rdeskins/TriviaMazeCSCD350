@@ -9,10 +9,12 @@ public class TriviaGame {
     private Scanner kb;
     private final String cheat = "cscd350";
     private String saveName = "SavedGame.txt";
+    private int difficulty;
 
-    public TriviaGame(IMaze maze, IDatabase db) {
+    public TriviaGame(IMaze maze, IDatabase db, int difficulty) {
         this.maze = maze;
         this.db = db;
+        this.difficulty = difficulty;
         this.kb = new Scanner(System.in);
     }
 
@@ -53,7 +55,7 @@ public class TriviaGame {
 
     private boolean askQuestion() {
         String input = "";
-        Question question = db.getRandomQuestion();
+        Question question = db.getRandomQuestion(difficulty);
         System.out.println(question.getQuestion());
         input = getInput();
         return checkAnswer(input, question);
