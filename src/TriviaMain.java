@@ -12,7 +12,7 @@ import java.util.Scanner;
 import static java.nio.file.StandardCopyOption.*;
 
 public class TriviaMain {
-    private static Database db;
+    private static IDatabase db;
     private static Scanner kb;
     private static final String saveName = "SavedGame.txt";
     private static final String databaseName = "trivia.db";
@@ -79,28 +79,36 @@ public class TriviaMain {
         }
         else {
             System.out.println("Sorry! The database has no questions. You can't play the game right now!");
+            System.out.println("Go to admin options in main menu to add questions to the database.");
         }
     }
 
     private static void loadGame() {
-        Maze maze;
-        try {
-            FileInputStream file = new FileInputStream(saveName);
-            ObjectInputStream in = new ObjectInputStream(file);
+        if (db.getQuestionTotal() > 0) {
+            Maze maze;
+            try {
+                FileInputStream file = new FileInputStream(saveName);
+                ObjectInputStream in = new ObjectInputStream(file);
 
-            maze = (Maze) in.readObject();
+                maze = (Maze) in.readObject();
 
-            in.close();
-            file.close();
+                in.close();
+                file.close();
             
-            System.out.println("Game loaded successfully!");
+                System.out.println("Game loaded successfully!");
             
-            TriviaGame game = new TriviaGame(maze, db);
-            game.playGame();
+                TriviaGame game = new TriviaGame(maze, db);
+                game.playGame();
+            }
+            catch (Exception e) {
+                System.out.println("Failed to load game.");
+            }
         }
-        catch (Exception e) {
-            System.out.println("Failed to load game.");
+        else {
+            System.out.println("Sorry! The database has no questions. You can't play the game right now!");
+            System.out.println("Go to admin options in main menu to add questions to the database.");
         }
+        
     }
 
     private static void adminMenu() {

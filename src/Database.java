@@ -6,7 +6,7 @@ import java.util.ArrayList;
 * Name: Robin Deskins
 * Description: Code related to creating the database and adding/retrieving data from the database.
 */
-public class Database {
+public class Database implements IDatabase{
     private String databaseName;
 
     public Database(String fileName) {
