@@ -1,0 +1,12 @@
+Welcome to the trivia maze game!
+
+When starting a new game, you will be asked for the size of maze and the difficulty of questions you would like to receive. If you choose a specific difficulty, the creators recommend choosing a maze size of 5 or less.
+
+Navigate between each room in the maze by using the W,A,S, or D keys. Each time you pass into a new room, you will be asked a trivia question. If you answer incorrectly, the door is permanently locked. Locked doors are shown as a wall of *asterisks*.
+
+If you're having trouble, you can type the answer 'cscd350' to open any door.
+
+While playing the game you can also return to the main menu or save your game. Saving your game allows you to play again later. Quitting without saving will cause you to lose your progress.
+
+Good luck!
+
