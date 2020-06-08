@@ -74,7 +74,7 @@ public class TriviaMain {
 
     private static void newGame() {
         if (db.getQuestionTotal() > 0) {
-            TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db);
+            TriviaGame game = new TriviaGame(new Maze(getMazeSize()), db, getDifficultyInput());
             game.playGame();
         }
         else {
@@ -97,7 +97,7 @@ public class TriviaMain {
             
                 System.out.println("Game loaded successfully!");
             
-                TriviaGame game = new TriviaGame(maze, db);
+                TriviaGame game = new TriviaGame(maze, db, getDifficultyInput());
                 game.playGame();
             }
             catch (Exception e) {
@@ -307,5 +307,31 @@ public class TriviaMain {
 
     private static boolean invalidMazeSize(int size) {
         return size < 4 || size > 8;
+    }
+
+    private static int getDifficultyInput() {
+        int difficulty = 0;
+        while (invalidDifficulty(difficulty)) {
+            System.out.println("Enter the desired difficulty for the game:\n" + 
+                               "1) Easy\n" + 
+                               "2) Hard\n" + 
+                               "3) Mixed\n");
+            try {
+                difficulty = Integer.parseInt(kb.nextLine());
+                if (invalidDifficulty(difficulty)) {
+                    System.out.println("Invalid input: Input must be 1, 2, or 3.");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Invalid input: Input must be an integer.");
+            }
+
+        }
+
+        return difficulty - 1;
+    }
+
+    private static boolean invalidDifficulty(int difficulty) {
+        return difficulty < 1 || difficulty > 3;
     }
 }
