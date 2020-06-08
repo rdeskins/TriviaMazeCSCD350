@@ -1,4 +1,6 @@
 
+package TriviaGame;
+
 public class Question {
     private String question, answer;
     

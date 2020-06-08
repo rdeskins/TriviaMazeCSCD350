@@ -1,4 +1,6 @@
 
+package TriviaGame;
+
 public class Maze implements IMaze{
     private static final long serialVersionUID = 7899501743041365523L;
     private Room[][] maze;

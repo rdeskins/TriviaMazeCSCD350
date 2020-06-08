@@ -1,4 +1,6 @@
 
+package TriviaGame;
+
 public interface IMaze extends java.io.Serializable{
     public String toString();
     public void moveNorth();

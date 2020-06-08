@@ -1,4 +1,6 @@
 
+package TriviaGame;
+
 public class Door implements java.io.Serializable{
     private static final long serialVersionUID = 8606443677152636377L;
     private boolean isUnlocked = true;

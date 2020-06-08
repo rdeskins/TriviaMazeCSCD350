@@ -3,6 +3,9 @@
 * Description: Tests for Database.java
 */
 
+package tests;
+
+import TriviaGame.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
