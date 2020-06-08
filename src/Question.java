@@ -15,7 +15,4 @@ public class Question {
         return this.answer;
     }
 
-    public boolean checkAnswer(String userAnswer) {
-        return userAnswer.equals(this.answer);
-    }
 }
