@@ -1,6 +1,7 @@
 /*
 * Name: Robin Deskins, Jasper Walden, Christopher Dobbins
 * Description: Trivia game's main. Menu traversal is handled here. 
+* Cheat answer: cscd350
 */
 
 import java.io.File;
@@ -21,8 +22,9 @@ public class TriviaMain {
     "Main Menu:\n" +
     "1) New Game\n" +
     "2) Load Game\n" +
-    "3) Admin Options\n" +
-    "4) Exit Game\n";
+    "3) Read Tutorial\n" +
+    "4) Admin Options\n" +
+    "5) Exit Game\n";
 
     private static final String adminMenuText =
     "Admin Options Menu:\n" +
@@ -50,25 +52,28 @@ public class TriviaMain {
                 System.out.print(mainMenuText);
                 menuInput = Integer.parseInt(kb.nextLine());
 
-                if(menuInput == 1){
+                if (menuInput == 1) {
                     newGame();
                 }
-                else if(menuInput == 2){
+                else if (menuInput == 2) {
                     loadGame();
                 }
-                else if(menuInput == 3){
+                else if (menuInput == 3) {
+                    displayTutorial();
+                }
+                else if(menuInput == 4) {
                     adminMenu();
                 }
-                else if(menuInput == 4){
+                else if (menuInput == 5) {
                     System.out.println("Goodbye!");
                 }
-                else{
+                else {
                     System.out.println("Invalid input: must be between 1 and 4");
                 }
             } catch(NumberFormatException e){
                 System.out.println("Invalid input: must be an integer.");
             }
-        } while (menuInput != 4);
+        } while (menuInput != 5);
         kb.close();
     }
 
@@ -109,6 +114,20 @@ public class TriviaMain {
             System.out.println("Go to admin options in main menu to add questions to the database.");
         }
         
+    }
+
+    private static void displayTutorial() {
+        File file = new File("tutorial.txt");
+        try {
+            Scanner scnf = new Scanner(file);
+            while (scnf.hasNextLine()) {
+                System.out.println(scnf.nextLine());
+            }
+            scnf.close();
+        }
+        catch(Exception e) {
+            System.out.println("Sorry! The tutorial could not be displayed!");
+        }
     }
 
     private static void adminMenu() {
@@ -291,8 +310,8 @@ public class TriviaMain {
     }
 
     private static int getMazeSize() {
-        int size = 0;
-        System.out.println("Enter the preferred size of the square maze:");
+        System.out.println("Enter the preferred size of the square maze (4-8):");
+        int size = Integer.parseInt(kb.nextLine());
         while (invalidMazeSize(size)) {
             System.out.println("Input size must be no less than 4 and no greater than 8");
             try {
