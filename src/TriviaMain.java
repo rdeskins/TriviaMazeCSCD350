@@ -311,16 +311,19 @@ public class TriviaMain {
 
     private static int getMazeSize() {
         System.out.println("Enter the preferred size of the square maze (4-8):");
-        int size = Integer.parseInt(kb.nextLine());
+        int size = 0;
         while (invalidMazeSize(size)) {
-            System.out.println("Input size must be no less than 4 and no greater than 8");
             try {
                 size = Integer.parseInt(kb.nextLine());
+                if (invalidMazeSize(size)) {
+                    System.out.println("Input size must be no less than 4 and no greater than 8");
+                }
             }
             catch (NumberFormatException e) {
                 System.out.println("Input must be an Integer!");
             }
         }
+        
         return size;
     }
 
