@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Interface for maze type classes
+*/
 
 package TriviaGame;
 

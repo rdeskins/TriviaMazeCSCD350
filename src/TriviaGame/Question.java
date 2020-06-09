@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Question class that contains a question and answer
+*/
 
 package TriviaGame;
 

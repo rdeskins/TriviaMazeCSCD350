@@ -1,3 +1,7 @@
+/*
+* Name: Robin Deskins, Chris Dobbins
+* Description: Interface for database type classes
+*/
 
 package TriviaGame;
 

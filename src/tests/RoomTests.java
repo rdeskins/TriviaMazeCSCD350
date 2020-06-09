@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Tests for Room.java
+*/
 
 package tests;
 

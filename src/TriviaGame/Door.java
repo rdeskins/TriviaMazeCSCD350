@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Door functionality to be used for Rooms. Has a locked or unlocked state.
+*/
 
 package TriviaGame;
 
