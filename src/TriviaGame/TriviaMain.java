@@ -4,6 +4,8 @@
 * Cheat answer: cscd350
 */
 
+package TriviaGame;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;

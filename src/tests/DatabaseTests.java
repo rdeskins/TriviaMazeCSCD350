@@ -3,6 +3,9 @@
 * Description: Tests for Database.java
 */
 
+package tests;
+
+import TriviaGame.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -97,14 +100,14 @@ public class DatabaseTests {
     @Test
     public void getRandomQuestionWithDifficultyTest() {
         db.insertQuestion(0, 2, new Question("Easy", "Easy"));
-        db.insertQuestion(2, 2, new Question("Hard", "Hard"));
+        db.insertQuestion(1, 2, new Question("Hard", "Hard"));
         String expectedDiff = "Easy";
         Question q = db.getRandomQuestion(0);
         String actualQ = q.getQuestion();
         assertTrue(actualQ.contains(expectedDiff));
 
         expectedDiff = "Hard";
-        q = db.getRandomQuestion(2);
+        q = db.getRandomQuestion(1);
         actualQ = q.getQuestion();
         assertTrue(actualQ.contains(expectedDiff));
     }

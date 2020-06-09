@@ -1,4 +1,6 @@
 
+package TriviaGame;
+
 import java.util.ArrayList;
 
 public interface IDatabase {
