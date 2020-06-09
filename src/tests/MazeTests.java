@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Tests for Maze.java
+*/
 
 package tests;
 

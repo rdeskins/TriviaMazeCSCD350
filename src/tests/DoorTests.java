@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Tests for Door.java
+*/
 
 package tests;
 

@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Game functionality here. Contains an IMaze and IDatabase and game logic to play through a game.
+*/
 
 package TriviaGame;
 

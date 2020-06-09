@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Maze to be used in the game. Handles maze layout, rooms, player location, goal, and win/lose conditions
+*/
 
 package TriviaGame;
 

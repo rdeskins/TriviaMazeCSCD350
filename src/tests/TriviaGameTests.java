@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Tests for TriviaGame.java
+*/
 
 package tests;
 

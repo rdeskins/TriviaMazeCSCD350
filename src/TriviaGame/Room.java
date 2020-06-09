@@ -1,3 +1,7 @@
+/*
+* Name: Chris Dobbins
+* Description: Rooms to be used in the Maze. Contains 4 doors, one each for North/South/West/East
+*/
 
 package TriviaGame;
 
