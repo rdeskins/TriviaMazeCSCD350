@@ -3,7 +3,7 @@ Trivia maze group project for CSCD350 at Eastern Washington University, Spring 2
 More in depth instructions for gameplay can be read in the [tutorial text file.](https://github.com/rdeskins/TriviaMazeCSCD350/blob/master/tutorial.txt)
 
 ## Getting Started
-This project was created and tested in [VSCode](https://code.visualstudio.com/). The game can be played by running TriviaMazeInstaller.exe and installing the program. An alternative is to download the source code, compile the files, and run TriviaMain.java
+This project was created and tested in [VSCode](https://code.visualstudio.com/). On Windows, the game can be played by running TriviaMazeInstaller.exe and installing the program. An alternative is to download the source code, compile the files, and run TriviaMain.java
 
 ## Authors
 **Robin Deskins** - [rdeskins](https://github.com/rdeskins)\
